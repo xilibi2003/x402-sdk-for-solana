@@ -5,12 +5,14 @@ config({ path: '.env_server' });
 
 const facilitatorUrl = process.env.FACILITATOR_URL as Resource;
 const payTo = process.env.ADDRESS as `0x${string}` | SolanaAddress;
+const network = (process.env.NETWORK || "solana-devnet") as any;
 
 console.log('facilitatorUrl', facilitatorUrl);
 console.log('payTo', payTo);
+console.log('network', network);
 
 if (!facilitatorUrl || !payTo) {
-  console.error("Missing required environment variables");
+  console.error("Missing required environment variables: FACILITATOR_URL, ADDRESS");
   process.exit(1);
 }
 
@@ -23,9 +25,7 @@ app.use(
       "GET /weather": {
         // USDC amount in dollars
         price: "$0.0018",
-        // network: "base" // uncomment for Base mainnet
-        network: "solana-localnet", // solana-localnet, solana-devnet, or solana
-        // network: "base-sepolia",
+        network: network, // configured via NETWORK env variable
       },
       "/premium/*": {
         // Define atomic amounts in any EIP-3009 token

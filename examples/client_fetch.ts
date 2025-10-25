@@ -8,11 +8,14 @@ import {
 config({ path: '.env_client' });
 
 const svmPrivateKey = process.env.USER_SVM_PRIVATE_KEY || "";
+const svmNetwork = (process.env.SVM_NETWORK || "solana-devnet") as any;
 const rpcUrl = process.env.SVM_RPC_URL || "";
 const baseURL = "http://localhost:4021"; //process.env.RESOURCE_SERVER_URL as string; // e.g. https://example.com
 const endpointPath = "/weather"; // process.env.ENDPOINT_PATH as string; // e.g. /weather
 const url = `${baseURL}${endpointPath}`; // e.g. https://example.com/weather
 
+console.log("svmNetwork", svmNetwork);
+console.log("rpcUrl", rpcUrl || '(using default)');
 console.log("url", url);
 
 if (!baseURL || !svmPrivateKey || !endpointPath) {
@@ -30,7 +33,7 @@ if (!baseURL || !svmPrivateKey || !endpointPath) {
  */
 async function main(): Promise<void> {
   // network name: solana-localnet, solana-devnet, solana
-  const svmSigner = await createSigner("solana-localnet", svmPrivateKey);
+  const svmSigner = await createSigner(svmNetwork, svmPrivateKey);
   console.log("fetch payment");
 
   // 配置自定义 RPC URL 以避免公共节点限流

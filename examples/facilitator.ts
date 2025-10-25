@@ -21,12 +21,14 @@ import {
 config();
 
 const SVM_PRIVATE_KEY = process.env.SVM_PRIVATE_KEY || "";
+const SVM_NETWORK = (process.env.SVM_NETWORK || "solana-devnet") as any;
 const SVM_RPC_URL = process.env.SVM_RPC_URL || "";
 
-console.log('SVM_RPC_URL', SVM_RPC_URL);
+console.log('SVM_NETWORK', SVM_NETWORK);
+console.log('SVM_RPC_URL', SVM_RPC_URL || '(using default)');
 
 if (!SVM_PRIVATE_KEY) {
-  console.error("Missing required environment variables");
+  console.error("Missing required environment variables: SVM_PRIVATE_KEY");
   process.exit(1);
 }
 
@@ -99,15 +101,14 @@ app.get("/settle", (req: Request, res: Response) => {
 app.get("/supported", async (req: Request, res: Response) => {
   let kinds: SupportedPaymentKind[] = [];
   // svm
-//   let networkName:string = "solana-localnet"; // "solana-devnet" or "solana"
   if (SVM_PRIVATE_KEY) {
-    const signer = await createSigner("solana-localnet", SVM_PRIVATE_KEY);
+    const signer = await createSigner(SVM_NETWORK, SVM_PRIVATE_KEY);
     const feePayer = isSvmSignerWallet(signer) ? signer.address : undefined;
 
     kinds.push({
       x402Version: 1,
       scheme: "exact",
-      network: "solana-localnet",
+      network: SVM_NETWORK,
       extra: {
         feePayer,
       },
