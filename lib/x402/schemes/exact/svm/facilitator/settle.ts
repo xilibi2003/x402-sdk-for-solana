@@ -218,7 +218,98 @@ export async function confirmSignedTransaction(
 }
 
 /**
+ * Confirm a signed transaction using HTTP polling (no WebSocket required).
+ *
+ * @param signedTransaction - The signed transaction to confirm
+ * @param rpc - The RPC client to use to confirm the transaction
+ * @returns The success and signature of the confirmed transaction
+ */
+export async function confirmSignedTransactionWithPolling(
+  signedTransaction: Awaited<ReturnType<typeof signTransaction>>,
+  rpc: RpcDevnet<SolanaRpcApiDevnet> | RpcMainnet<SolanaRpcApiMainnet>,
+): Promise<{ success: boolean; errorReason?: (typeof ErrorReasons)[number]; signature: string }> {
+  const signature = getSignatureFromTransaction(signedTransaction);
+
+  // Get the transaction's blockhash lifetime
+  const compiledTransactionMessage = getCompiledTransactionMessageDecoder().decode(
+    signedTransaction.messageBytes,
+  );
+  const decompiledTransactionMessage = await decompileTransactionMessageFetchingLookupTables(
+    compiledTransactionMessage,
+    rpc,
+  );
+  assertIsTransactionMessageWithBlockhashLifetime(decompiledTransactionMessage);
+
+  const lastValidBlockHeight = decompiledTransactionMessage.lifetimeConstraint.lastValidBlockHeight;
+
+  // Polling configuration
+  const pollInterval = 1000; // 1 second
+  const timeout = 60000; // 60 seconds
+  const startTime = Date.now();
+
+  while (Date.now() - startTime < timeout) {
+    try {
+      // Check current block height
+      const currentBlockHeight = await rpc.getBlockHeight({ commitment: "confirmed" }).send();
+
+      // Check if block height exceeded
+      if (currentBlockHeight > lastValidBlockHeight) {
+        return {
+          success: false,
+          errorReason: "settle_exact_svm_block_height_exceeded",
+          signature,
+        };
+      }
+
+      // Check transaction status
+      const statusResponse = await rpc
+        .getSignatureStatuses([signature], { searchTransactionHistory: true })
+        .send();
+
+      const status = statusResponse.value[0];
+
+      if (status !== null) {
+        // Transaction found
+        if (status.err) {
+          // Transaction failed
+          return {
+            success: false,
+            errorReason: "settle_exact_svm_transaction_failed",
+            signature,
+          };
+        }
+
+        // Check if confirmed
+        if (
+          status.confirmationStatus === "confirmed" ||
+          status.confirmationStatus === "finalized"
+        ) {
+          return {
+            success: true,
+            signature,
+          };
+        }
+      }
+
+      // Wait before next poll
+      await new Promise((resolve) => setTimeout(resolve, pollInterval));
+    } catch (error) {
+      console.error("Error polling transaction status:", error);
+      // Continue polling despite errors
+    }
+  }
+
+  // Timeout
+  return {
+    success: false,
+    errorReason: "settle_exact_svm_transaction_confirmation_timed_out",
+    signature,
+  };
+}
+
+/**
  * Send and confirm a signed transaction.
+ * First tries WebSocket-based confirmation, falls back to HTTP polling if WebSocket fails.
  *
  * @param signedTransaction - The signed transaction to send and confirm
  * @param rpc - The RPC client to use to send and confirm the transaction
@@ -231,5 +322,13 @@ export async function sendAndConfirmSignedTransaction(
   rpcSubscriptions: ReturnType<typeof getRpcSubscriptions>,
 ): Promise<{ success: boolean; errorReason?: (typeof ErrorReasons)[number]; signature: string }> {
   await sendSignedTransaction(signedTransaction, rpc);
-  return await confirmSignedTransaction(signedTransaction, rpc, rpcSubscriptions);
+
+  try {
+    // Try WebSocket-based confirmation first
+    return await confirmSignedTransaction(signedTransaction, rpc, rpcSubscriptions);
+  } catch (error) {
+    console.warn("WebSocket confirmation failed, falling back to HTTP polling:", error);
+    // Fall back to HTTP polling
+    return await confirmSignedTransactionWithPolling(signedTransaction, rpc);
+  }
 }

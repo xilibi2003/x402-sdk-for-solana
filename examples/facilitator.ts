@@ -20,9 +20,10 @@ import {
 
 config();
 
-const EVM_PRIVATE_KEY = process.env.EVM_PRIVATE_KEY || "";
 const SVM_PRIVATE_KEY = process.env.SVM_PRIVATE_KEY || "";
 const SVM_RPC_URL = process.env.SVM_RPC_URL || "";
+
+console.log('SVM_RPC_URL', SVM_RPC_URL);
 
 if (!SVM_PRIVATE_KEY) {
   console.error("Missing required environment variables");
@@ -69,9 +70,7 @@ app.post("/verify", async (req: Request, res: Response) => {
     // use the correct client/signer based on the requested network
     // svm verify requires a Signer because it signs & simulates the txn
     let client: Signer | ConnectedClient;
-    if (SupportedEVMNetworks.includes(paymentRequirements.network)) {
-      client = createConnectedClient(paymentRequirements.network);
-    } else if (SupportedSVMNetworks.includes(paymentRequirements.network)) {
+    if (SupportedSVMNetworks.includes(paymentRequirements.network)) {
       client = await createSigner(paymentRequirements.network, SVM_PRIVATE_KEY);
     } else {
       throw new Error("Invalid network");
@@ -99,25 +98,16 @@ app.get("/settle", (req: Request, res: Response) => {
 
 app.get("/supported", async (req: Request, res: Response) => {
   let kinds: SupportedPaymentKind[] = [];
-
-  // evm
-  if (EVM_PRIVATE_KEY) {
-    kinds.push({
-      x402Version: 1,
-      scheme: "exact",
-      network: "base-sepolia",
-    });
-  }
-
   // svm
+//   let networkName:string = "solana-localnet"; // "solana-devnet" or "solana"
   if (SVM_PRIVATE_KEY) {
-    const signer = await createSigner("solana-devnet", SVM_PRIVATE_KEY);
+    const signer = await createSigner("solana-localnet", SVM_PRIVATE_KEY);
     const feePayer = isSvmSignerWallet(signer) ? signer.address : undefined;
 
     kinds.push({
       x402Version: 1,
       scheme: "exact",
-      network: "solana-devnet",
+      network: "solana-localnet",
       extra: {
         feePayer,
       },
@@ -136,9 +126,7 @@ app.post("/settle", async (req: Request, res: Response) => {
 
     // use the correct private key based on the requested network
     let signer: Signer;
-    if (SupportedEVMNetworks.includes(paymentRequirements.network)) {
-      signer = await createSigner(paymentRequirements.network, EVM_PRIVATE_KEY);
-    } else if (SupportedSVMNetworks.includes(paymentRequirements.network)) {
+    if (SupportedSVMNetworks.includes(paymentRequirements.network)) {
       signer = await createSigner(paymentRequirements.network, SVM_PRIVATE_KEY);
     } else {
       throw new Error("Invalid network");

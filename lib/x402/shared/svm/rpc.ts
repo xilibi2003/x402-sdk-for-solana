@@ -15,6 +15,11 @@ import {
 import { Network } from "../../types/shared";
 
 /**
+ * Default RPC endpoint for Solana localnet
+ */
+const LOCALNET_RPC_URL = "http://127.0.0.1:8899";
+
+/**
  * Default public RPC endpoint for Solana devnet
  */
 const DEVNET_RPC_URL = "https://api.devnet.solana.com";
@@ -25,6 +30,11 @@ const DEVNET_RPC_URL = "https://api.devnet.solana.com";
 const MAINNET_RPC_URL = "https://api.mainnet-beta.solana.com";
 
 /**
+ * Default WebSocket endpoint for Solana localnet
+ */
+const LOCALNET_WS_URL = "ws://127.0.0.1:8900";
+
+/**
  * Default public WebSocket endpoint for Solana devnet
  */
 const DEVNET_WS_URL = "wss://api.devnet.solana.com";
@@ -33,6 +43,18 @@ const DEVNET_WS_URL = "wss://api.devnet.solana.com";
  * Default public WebSocket endpoint for Solana mainnet
  */
 const MAINNET_WS_URL = "wss://api.mainnet-beta.solana.com";
+
+/**
+ * Creates a Solana RPC client for the localnet network.
+ *
+ * @param url - Optional URL of the localnet network.
+ * @returns A Solana RPC client.
+ */
+export function createLocalnetRpcClient(url?: string): RpcDevnet<SolanaRpcApiDevnet> {
+  return createSolanaRpc(
+    url ? devnet(url) : devnet(LOCALNET_RPC_URL),
+  ) as RpcDevnet<SolanaRpcApiDevnet>;
+}
 
 /**
  * Creates a Solana RPC client for the devnet network.
@@ -70,7 +92,9 @@ export function getRpcClient(
   url?: string,
 ): RpcDevnet<SolanaRpcApiDevnet> | RpcMainnet<SolanaRpcApiMainnet> {
   // TODO: should the networks be replaced with enum references?
-  if (network === "solana-devnet") {
+  if (network === "solana-localnet") {
+    return createLocalnetRpcClient(url);
+  } else if (network === "solana-devnet") {
     return createDevnetRpcClient(url);
   } else if (network === "solana") {
     return createMainnetRpcClient(url);
@@ -94,7 +118,9 @@ export function getRpcSubscriptions(
   RpcSubscriptionsTransportFromClusterUrl<ClusterUrl>
 > {
   // TODO: should the networks be replaced with enum references?
-  if (network === "solana-devnet") {
+  if (network === "solana-localnet") {
+    return createSolanaRpcSubscriptions(devnet(url ? httpToWs(url) : LOCALNET_WS_URL));
+  } else if (network === "solana-devnet") {
     return createSolanaRpcSubscriptions(devnet(url ? httpToWs(url) : DEVNET_WS_URL));
   } else if (network === "solana") {
     return createSolanaRpcSubscriptions(mainnet(url ? httpToWs(url) : MAINNET_WS_URL));

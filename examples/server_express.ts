@@ -24,7 +24,7 @@ app.use(
         // USDC amount in dollars
         price: "$0.0018",
         // network: "base" // uncomment for Base mainnet
-        network: "solana-devnet", // uncomment for Solana mainnet
+        network: "solana-localnet", // solana-localnet, solana-devnet, or solana
         // network: "base-sepolia",
       },
       "/premium/*": {

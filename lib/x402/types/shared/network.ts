@@ -6,6 +6,7 @@ export const NetworkSchema = z.enum([
   "avalanche-fuji",
   "avalanche",
   "iotex",
+  "solana-localnet",
   "solana-devnet",
   "solana",
   "sei",
@@ -43,8 +44,9 @@ export const EvmNetworkToChainId = new Map<Network, number>([
 ]);
 
 // svm
-export const SupportedSVMNetworks: Network[] = ["solana-devnet", "solana"];
+export const SupportedSVMNetworks: Network[] = ["solana-localnet", "solana-devnet", "solana"];
 export const SvmNetworkToChainId = new Map<Network, number>([
+  ["solana-localnet", 104],
   ["solana-devnet", 103],
   ["solana", 101],
 ]);
