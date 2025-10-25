@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "setup-localnet": "tsx scripts/setup-localnet.ts",
     "facilitator": "tsx examples/facilitator.ts",
     "client": "tsx examples/client_fetch.ts",
     "server": "tsx examples/server_express.ts 2>&1"
