@@ -1,0 +1,7 @@
+.env_client
+.env_server
+.env
+
+node_modules
+pnpm-lock.yaml
+.claude
