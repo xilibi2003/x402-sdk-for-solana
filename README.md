@@ -1,52 +1,292 @@
 # X402 SDK for Solana
 
-一个基于 X402 协议的 Solana 支付网关的 TypeScript SDK，支持通过 SPL Token 进行 HTTP 请求的按使用付费（Pay-per-use）。
+一个基于 X402 协议的 Solana 支付网关的 TypeScript SDK，快速为你的应用接入访问付费功能（Pay-per-use）， 支持配置任意 Solana 网络、配置任意的 SPL Token 。
+
+[![npm version](https://img.shields.io/npm/v/x402-sdk-for-solana.svg)](https://www.npmjs.com/package/x402-sdk-for-solana)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 目录
 
 - [功能特性](#功能特性)
+- [安装](#安装)
 - [快速开始](#快速开始)
+  - [在 Server 中集成](#在-server-中集成)
+  - [在 Client 中集成](#在-client-中集成)
+  - [创建自己的 Facilitator](#创建自己的-facilitator)
 - [配置说明](#配置说明)
 - [使用示例](#使用示例)
 - [自定义 Token 配置](#自定义-token-配置)
-- [开发指南](#开发指南)
+
+
+## X402 工作流程
+
+### 角色说明
+
+- **Client**: 发起请求并支付费用的用户
+- **Server**: 提供受保护 API 的服务提供者
+- **Facilitator**: 支付促成者，负责交易验证和提交
+- **Solana Network**: 区块链网络，记录所有交易
+
+工作流程：
+
+1. **Client** 向 Server 发送请求
+2. **Server** 返回 402 状态码和支付要求
+3. **Client** 创建并签署支付交易
+4. **Client** 将签名的交易附加到 X-PAYMENT header 重新请求
+5. **Server** 通过 **Facilitator** 验证支付
+6. **Facilitator** 将交易提交到 **Solana** 网络
+7. **Server** 返回受保护的数据
+
+
 
 ## 功能特性
 
 - ✅ **Solana 支付集成**：支持通过 SPL Token 进行小额支付
 - ✅ **Express 中间件**：简单易用的 Express 中间件，一行代码保护 API 端点
-- ✅ **自定义  Token 支持**：支持任何 SPL Token，不仅限于 USDC
-- ✅ **多网络支持**：支持 solana-localnet、solana-devnet 和 solana-mainnet
+- ✅ **客户端 Fetch 封装**：自动处理 402 支付的 fetch 包装器
+- ✅ **Facilitator 支持**：内置支付验证和结算服务
+- ✅ **自定义 Token 支持**：支持任何 SPL Token
+- ✅ **多网络支持**：支持 solana-localnet、solana-devnet 和 solana
+- ✅ **TypeScript 支持**：完整的类型定义
 
+## 安装
 
-## 必需依赖
-
-- **Node.js**: >= 18.0.0
-- **pnpm**: >= 8.0.0
-- **Solana CLI Tools** (用于 localnet 开发):
-  - `solana-cli`
-  - `spl-token-cli`
-
-### 安装 Solana CLI Tools
+使用 npm、yarn 或 pnpm 安装 SDK：
 
 ```bash
-# macOS/Linux
-sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
+# 使用 npm
+npm install x402-sdk-for-solana
 
-# 验证安装
-solana --version
-spl-token --version
+# 使用 yarn
+yarn add x402-sdk-for-solana
+
+# 使用 pnpm
+pnpm add x402-sdk-for-solana
 ```
+
+### 必需依赖
+
+- **Node.js**: >= 18.0.0
 
 ## 快速开始
 
-### 1. 安装依赖
+根据你的使用场景，选择相应的集成方式：
+
+### 在 Server 中集成
+
+在你的服务端应用中集成 X402 SDK，保护你的 API 端点：
+
+#### 1. 安装
 
 ```bash
-pnpm install
+npm install x402-sdk-for-solana express dotenv
 ```
 
-### 2. 启动 Solana Localnet
+#### 2. 创建 Express 服务器
+
+```typescript
+import express from "express";
+import { paymentMiddleware } from "x402-sdk-for-solana";
+import type { Resource, SolanaAddress, X402Config } from "x402-sdk-for-solana";
+
+const app = express();
+
+// 配置支付中间件
+app.use(
+  paymentMiddleware(
+    "YOUR_SOLANA_ADDRESS" as SolanaAddress,  // 接收支付的地址
+    {
+      "GET /weather": {
+        price: "0.0018",  // 每次请求价格
+        network: "solana-devnet"
+      }
+    },
+    { url: "https://your-facilitator-url.com" }  // Facilitator 服务地址
+  )
+);
+
+// 定义受保护的路由
+app.get("/weather", (req, res) => {
+  res.json({
+    temperature: 72,
+    condition: "sunny",
+    location: "San Francisco"
+  });
+});
+
+app.listen(4021, () => {
+  console.log("Server running on port 4021");
+});
+```
+
+#### 3. 使用自定义 Token
+
+```typescript
+const x402Config: X402Config = {
+  svmConfig: {
+    defaultToken: {
+      address: "YOUR_TOKEN_MINT_ADDRESS",
+      decimals: 6,
+      name: "USDC",
+    },
+  },
+};
+
+app.use(
+  paymentMiddleware(
+    payTo,
+    routes,
+    { url: facilitatorUrl },
+    undefined,  // paywall config
+    x402Config  // 传入自定义 token 配置
+  )
+);
+```
+
+### 在 Client 中集成
+
+在你的客户端应用中集成 X402 SDK，调用受保护的 API：
+
+#### 1. 安装
+
+```bash
+npm install x402-sdk-for-solana
+```
+
+#### 2. 使用 Fetch 包装器
+
+```typescript
+import {
+  wrapFetchWithPayment,
+  createSigner,
+  decodeXPaymentResponse
+} from "x402-sdk-for-solana/fetch";
+
+async function callProtectedAPI() {
+  // 创建签名者
+  const signer = await createSigner(
+    "solana-devnet",  // 网络
+    "YOUR_PRIVATE_KEY_BASE58"  // 你的私钥
+  );
+
+  // 包装 fetch
+  const fetchWithPayment = wrapFetchWithPayment(
+    fetch,
+    signer,
+    BigInt(100000),  // 最大支付金额（可选）
+    undefined,  // payment requirements selector（可选）
+    {
+      svmConfig: {
+        rpcUrl: "https://api.devnet.solana.com"  // 自定义 RPC URL（可选）
+      }
+    }
+  );
+
+  // 发起请求
+  const response = await fetchWithPayment("http://localhost:4021/weather", {
+    method: "GET"
+  });
+
+  const data = await response.json();
+  console.log("Response:", data);
+
+  // 解析支付响应
+  const paymentResponse = decodeXPaymentResponse(
+    response.headers.get("x-payment-response")!
+  );
+  console.log("Payment:", paymentResponse);
+}
+
+callProtectedAPI();
+```
+
+### 创建自己的 Facilitator
+
+部署你自己的 Facilitator 服务来验证和结算支付：
+
+#### 1. 安装
+
+```bash
+npm install x402-sdk-for-solana express
+```
+
+#### 2. 创建 Facilitator 服务
+
+```typescript
+import express from "express";
+import { verify, settle } from "x402-sdk-for-solana/facilitator";
+import {
+  PaymentRequirementsSchema,
+  PaymentPayloadSchema,
+  createSigner,
+  SupportedSVMNetworks,
+  type X402Config,
+} from "x402-sdk-for-solana/types";
+
+const app = express();
+app.use(express.json());
+
+const PRIVATE_KEY = process.env.SVM_PRIVATE_KEY!;
+const NETWORK = process.env.SVM_NETWORK || "solana-devnet";
+const RPC_URL = process.env.SVM_RPC_URL;
+
+// 配置（可选）
+const x402Config: X402Config | undefined = RPC_URL
+  ? { svmConfig: { rpcUrl: RPC_URL } }
+  : undefined;
+
+// 验证端点
+app.post("/verify", async (req, res) => {
+  try {
+    const { paymentPayload, paymentRequirements } = req.body;
+
+    const parsedRequirements = PaymentRequirementsSchema.parse(paymentRequirements);
+    const parsedPayload = PaymentPayloadSchema.parse(paymentPayload);
+
+    const signer = await createSigner(parsedRequirements.network, PRIVATE_KEY);
+    const result = await verify(signer, parsedPayload, parsedRequirements, x402Config);
+
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: "Invalid request" });
+  }
+});
+
+// 结算端点
+app.post("/settle", async (req, res) => {
+  try {
+    const { paymentPayload, paymentRequirements } = req.body;
+
+    const parsedRequirements = PaymentRequirementsSchema.parse(paymentRequirements);
+    const parsedPayload = PaymentPayloadSchema.parse(paymentPayload);
+
+    const signer = await createSigner(parsedRequirements.network, PRIVATE_KEY);
+    const result = await settle(signer, parsedPayload, parsedRequirements, x402Config);
+
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: "Invalid request" });
+  }
+});
+
+// 支持的支付类型
+app.get("/supported", async (req, res) => {
+  const signer = await createSigner(NETWORK, PRIVATE_KEY);
+  res.json({
+    kinds: [{
+      x402Version: 1,
+      scheme: "exact",
+      network: NETWORK,
+    }]
+  });
+});
+
+app.listen(3002, () => {
+  console.log("Facilitator running on port 3002");
+});
+```
+
+#### 3. 启动 Solana Localnet
 
 在终端中运行：
 
@@ -56,7 +296,7 @@ solana-test-validator
 
 保持该终端运行，在新终端中继续以下步骤。
 
-### 3. 本地测试自动化设置脚本（推荐）
+#### 4. 本地测试自动化设置脚本（推荐）
 
 运行自动化设置脚本，它会：
 - 生成 3 个密钥对（facilitator、server、client）
@@ -94,7 +334,7 @@ SVM_RPC_URL=http://127.0.0.1:8899
 USER_SVM_PRIVATE_KEY=3E8kogunw...
 ```
 
-### 4. 配置环境变量
+#### 5. 配置环境变量
 
 将上述输出的环境变量分别复制到对应的配置文件中：
 
@@ -125,7 +365,7 @@ USER_SVM_PRIVATE_KEY=你的client私钥
 EOF
 ```
 
-### 5. 启动服务
+#### 6. 启动服务
 
 在三个不同的终端中分别运行：
 
@@ -299,22 +539,7 @@ main();
 ```
 
 
-### 工作流程
 
-1. **Client** 向 Server 发送请求
-2. **Server** 返回 402 状态码和支付要求
-3. **Client** 创建并签署支付交易
-4. **Client** 将签名的交易附加到 X-PAYMENT header 重新请求
-5. **Server** 通过 **Facilitator** 验证支付
-6. **Facilitator** 将交易提交到 **Solana** 网络
-7. **Server** 返回受保护的数据
-
-### 角色说明
-
-- **Client**: 发起请求并支付费用的用户
-- **Server**: 提供受保护 API 的服务提供者
-- **Facilitator**: 支付促成者，负责交易验证和提交
-- **Solana Network**: 区块链网络，记录所有交易
 
 ## API 文档
 
@@ -366,33 +591,9 @@ interface X402Config {
   };
 }
 ```
- 
-## 开发指南
 
-### 项目结构
 
-```
-x402-sdk-for-solana/
-├── lib/                    # 核心库代码
-│   ├── x402/              # X402 协议实现
-│   │   ├── schemes/       # 支付方案
-│   │   ├── shared/        # 共享工具
-│   │   ├── svm/           # Solana VM 集成
-│   │   └── types/         # TypeScript 类型
-│   └── x402-express/      # Express 中间件
-├── examples/              # 示例代码
-│   ├── facilitator.ts     # Facilitator 示例
-│   ├── server_express.ts  # Server 示例
-│   └── client_fetch.ts    # Client 示例
-├── scripts/               # 工具脚本
-│   └── setup-localnet.ts  # Localnet 自动化设置
-├── .env                   # Facilitator 配置
-├── .env_server            # Server 配置
-├── .env_client            # Client 配置
-└── package.json
-```
-
-### NPM 脚本
+### 参考示例 及 NPM 脚本
 
 ```bash
 # 自动化设置 localnet 环境
@@ -409,21 +610,11 @@ pnpm run client
 ```
 
 
-### 构建项目
-
-```bash
-pnpm build
-```
-
 ## 贡献指南
 
-欢迎贡献！请遵循以下步骤：
+欢迎贡献！详细的开发指南请参阅 [参与贡献](./Contribute.md) 部分。 
 
-1. Fork 本仓库
-2. 创建功能分支 (`git checkout -b feature/amazing-feature`)
-3. 提交更改 (`git commit -m 'Add some amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 创建 Pull Request
+ 
 
 ## 许可证
 
@@ -431,17 +622,17 @@ MIT
 
 ## 相关链接
 
+- [npm 包](https://www.npmjs.com/package/x402-sdk-for-solana)
+- [GitHub 仓库](https://github.com/xilibi2003/x402-sdk-for-solana)
 - [Solana 文档](https://docs.solana.com/)
 - [SPL Token 文档](https://spl.solana.com/token)
 - [Express 文档](https://expressjs.com/)
+- [SDK 发布指南](./SDK_PUBLISHING_GUIDE.md)
 
 ## 支持
 
 如有问题或建议，请：
 
-1. 查看 [故障排除](#故障排除) 部分
-2. 搜索已有的 Issues
+1. 查看 [Issues](https://github.com/xilibi2003/x402-sdk-for-solana/issues)
+2. 搜索已有的问题
 3. 创建新的 Issue
-
- 
- 

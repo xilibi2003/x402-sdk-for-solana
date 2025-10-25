@@ -48,7 +48,7 @@ app.use(
     {
       "GET /weather": {
         // USDC amount in dollars
-        price: "$0.0018",
+        price: "0.0018",
         network: network, // configured via NETWORK env variable
       },
       "/premium/*": {
