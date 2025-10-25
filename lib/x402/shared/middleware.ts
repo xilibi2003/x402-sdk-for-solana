@@ -119,9 +119,23 @@ export function findMatchingRoute(
  * Gets the default asset (USDC) for the given network
  *
  * @param network - The network to get the default asset for
+ * @param customToken - Optional custom token configuration to use instead of USDC
  * @returns The default asset
  */
-export function getDefaultAsset(network: Network) {
+export function getDefaultAsset(network: Network, customToken?: { address: string; decimals: number; name: string; eip712?: { name: string; version: string } }) {
+  // If custom token is provided, use it
+  if (customToken) {
+    return {
+      address: customToken.address,
+      decimals: customToken.decimals,
+      eip712: customToken.eip712 || {
+        name: customToken.name,
+        version: "2",
+      },
+    };
+  }
+
+  // Otherwise, use default USDC
   const chainId = getNetworkId(network);
   const usdc = getUsdcChainConfigForChain(chainId);
   if (!usdc) {
@@ -142,11 +156,13 @@ export function getDefaultAsset(network: Network) {
  *
  * @param price - The price to parse
  * @param network - The network to get the default asset for
+ * @param customToken - Optional custom token configuration to use instead of USDC
  * @returns The parsed amount or an error message
  */
 export function processPriceToAtomicAmount(
   price: Price,
   network: Network,
+  customToken?: { address: string; decimals: number; name: string; eip712?: { name: string; version: string } },
 ):
   | { maxAmountRequired: string; asset: ERC20TokenAmount["asset"] | SPLTokenAmount["asset"] }
   | { error: string } {
@@ -163,7 +179,7 @@ export function processPriceToAtomicAmount(
       };
     }
     const parsedUsdAmount = parsedAmount.data;
-    asset = getDefaultAsset(network);
+    asset = getDefaultAsset(network, customToken);
     maxAmountRequired = (parsedUsdAmount * 10 ** asset.decimals).toString();
   } else {
     // Token amount in atomic units

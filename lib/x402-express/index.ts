@@ -22,6 +22,7 @@ import {
   settleResponseHeader,
   SupportedEVMNetworks,
   SupportedSVMNetworks,
+  X402Config,
 } from "../x402/types";
 import { useFacilitator } from "../x402/verify";
 
@@ -32,6 +33,7 @@ import { useFacilitator } from "../x402/verify";
  * @param routes - Configuration for protected routes and their payment requirements
  * @param facilitator - Optional configuration for the payment facilitator service
  * @param paywall - Optional configuration for the default paywall
+ * @param x402Config - Optional X402 configuration including custom token settings
  * @returns An Express middleware handler
  *
  * @example
@@ -68,6 +70,15 @@ import { useFacilitator } from "../x402/verify";
  *     cdpClientKey: 'your-cdp-client-key',
  *     appLogo: '/images/logo.svg',
  *     appName: 'My App',
+ *   },
+ *   {
+ *     svmConfig: {
+ *       defaultToken: {
+ *         address: 'TokenMintAddress...',
+ *         decimals: 6,
+ *         name: 'USDC'
+ *       }
+ *     }
  *   }
  * ));
  * ```
@@ -77,6 +88,7 @@ export function paymentMiddleware(
   routes: RoutesConfig,
   facilitator?: FacilitatorConfig,
   paywall?: PaywallConfig,
+  x402Config?: X402Config,
 ) {
   const { verify, settle, supported } = useFacilitator(facilitator);
   const x402Version = 1;
@@ -107,7 +119,11 @@ export function paymentMiddleware(
       discoverable,
     } = config;
 
-    const atomicAmountForAsset = processPriceToAtomicAmount(price, network);
+    const atomicAmountForAsset = processPriceToAtomicAmount(
+      price,
+      network,
+      x402Config?.svmConfig?.defaultToken
+    );
     if ("error" in atomicAmountForAsset) {
       throw new Error(atomicAmountForAsset.error);
     }
@@ -353,5 +369,7 @@ export type {
   Resource,
   RouteConfig,
   RoutesConfig,
+  X402Config,
+  TokenConfig,
 } from "../x402/types";
 export type { Address as SolanaAddress } from "@solana/kit";
