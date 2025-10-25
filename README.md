@@ -13,9 +13,8 @@
   - [在 Server 中集成](#在-server-中集成)
   - [在 Client 中集成](#在-client-中集成)
   - [创建自己的 Facilitator](#创建自己的-facilitator)
-- [配置说明](#配置说明)
-- [使用示例](#使用示例)
-- [自定义 Token 配置](#自定义-token-配置)
+  - [本地开发和测试](#本地开发和测试)
+- [API 文档](#api-文档)
 
 
 ## X402 工作流程
@@ -24,7 +23,7 @@
 
 - **Client**: 发起请求并支付费用的用户
 - **Server**: 提供受保护 API 的服务提供者
-- **Facilitator**: 支付促成者，负责交易验证和提交
+- **Facilitator**: 负责交易验证和提交
 - **Solana Network**: 区块链网络，记录所有交易
 
 工作流程：
@@ -74,13 +73,40 @@ pnpm add x402-sdk-for-solana
 
 ### 在 Server 中集成
 
-在你的服务端应用中集成 X402 SDK，保护你的 API 端点：
+在你的服务端应用中集成 X402 SDK，实现在用户支付后才可访问某个服务器资源。
 
 #### 1. 安装
 
 ```bash
 npm install x402-sdk-for-solana express dotenv
 ```
+
+
+#### 配置 server 环境变量
+
+```
+FACILITATOR_URL=http://localhost:3002
+NETWORK=solana-localnet
+ADDRESS=你的server地址
+TOKEN_MINT_ADDRESS=你的token地址
+TOKEN_DECIMALS=6
+TOKEN_NAME=USDC
+```
+
+| 变量 | 描述 | 必需 |
+|------|------|------|
+| `FACILITATOR_URL` | Facilitator 服务地址 | ✅ |
+| `NETWORK` | 支付网络 | ✅ |
+| `ADDRESS` | 接收支付的地址 | ✅ |
+| `TOKEN_MINT_ADDRESS` | Token Mint 地址 | ⚠️ 可选 |
+| `TOKEN_DECIMALS` | Token 小数位数 | ⚠️ 可选 |
+| `TOKEN_NAME` | Token 名称 | ⚠️ 可选 |
+
+> ⚠️ 如果不配置 Token 相关变量，将使用 `lib/x402/types/shared/evm/config.ts`  默认定义的 USDC。
+
+
+参考[本地开发和测试](#本地开发和测试)
+
 
 #### 2. 创建 Express 服务器
 
@@ -97,7 +123,7 @@ app.use(
     "YOUR_SOLANA_ADDRESS" as SolanaAddress,  // 接收支付的地址
     {
       "GET /weather": {
-        price: "0.0018",  // 每次请求价格
+        price: "0.0018",  // 每次请求需要支付多少的 Token 
         network: "solana-devnet"
       }
     },
@@ -153,7 +179,24 @@ app.use(
 npm install x402-sdk-for-solana
 ```
 
-#### 2. 使用 Fetch 包装器
+
+#### 2. 配置 client 环境变量
+
+
+```
+SVM_NETWORK=solana-localnet
+SVM_RPC_URL=http://127.0.0.1:8899
+USER_SVM_PRIVATE_KEY=你的client私钥
+```
+
+| 变量 | 描述 | 示例 |
+|------|------|------|
+| `SVM_NETWORK` | Solana 网络 | `solana-localnet` |
+| `SVM_RPC_URL` | RPC 节点 URL | `http://127.0.0.1:8899` |
+| `USER_SVM_PRIVATE_KEY` | 用户私钥（Base58 格式） | `3E8kogunw...` |
+
+
+#### 3. 使用 Fetch 包装器
 
 ```typescript
 import {
@@ -210,7 +253,27 @@ callProtectedAPI();
 npm install x402-sdk-for-solana express
 ```
 
-#### 2. 创建 Facilitator 服务
+#### 2. 配置环境变量
+
+```bash
+# 创建 .env 文件（facilitator 配置）
+SVM_PRIVATE_KEY=你的facilitator私钥
+SVM_NETWORK=solana-localnet
+SVM_RPC_URL=http://127.0.0.1:8899
+PORT=3002
+```
+
+| 变量 | 描述 | 示例 |
+|------|------|------|
+| `SVM_PRIVATE_KEY` | Facilitator 的私钥（Base58 格式） | `4FdeM2Hyx...` |
+| `SVM_NETWORK` | Solana 网络 | `solana-localnet` / `solana-devnet` / `solana` |
+| `SVM_RPC_URL` | RPC 节点 URL | `http://127.0.0.1:8899` |
+| `PORT` | Facilitator 服务端口 | `3002` |
+
+
+可参考[本地开发和测试](#本地开发和测试) 
+
+#### 3. 创建 Facilitator 服务
 
 ```typescript
 import express from "express";
@@ -230,7 +293,7 @@ const PRIVATE_KEY = process.env.SVM_PRIVATE_KEY!;
 const NETWORK = process.env.SVM_NETWORK || "solana-devnet";
 const RPC_URL = process.env.SVM_RPC_URL;
 
-// 配置（可选）
+// 配置 
 const x402Config: X402Config | undefined = RPC_URL
   ? { svmConfig: { rpcUrl: RPC_URL } }
   : undefined;
@@ -286,7 +349,11 @@ app.listen(3002, () => {
 });
 ```
 
-#### 3. 启动 Solana Localnet
+### 本地开发和测试 
+
+example 准备了一个简单的示例，方便本地测试。
+
+#### 启动 Solana Localnet
 
 在终端中运行：
 
@@ -296,7 +363,7 @@ solana-test-validator
 
 保持该终端运行，在新终端中继续以下步骤。
 
-#### 4. 本地测试自动化设置脚本（推荐）
+#### 自动化设置脚本 
 
 运行自动化设置脚本，它会：
 - 生成 3 个密钥对（facilitator、server、client）
@@ -334,42 +401,12 @@ SVM_RPC_URL=http://127.0.0.1:8899
 USER_SVM_PRIVATE_KEY=3E8kogunw...
 ```
 
-#### 5. 配置环境变量
 
-将上述输出的环境变量分别复制到对应的配置文件中：
-
-```bash
-# 创建 .env 文件（facilitator 配置）
-cat > .env << EOF
-SVM_PRIVATE_KEY=你的facilitator私钥
-SVM_NETWORK=solana-localnet
-SVM_RPC_URL=http://127.0.0.1:8899
-PORT=3002
-EOF
-
-# 创建 .env_server 文件（server 配置）
-cat > .env_server << EOF
-FACILITATOR_URL=http://localhost:3002
-NETWORK=solana-localnet
-ADDRESS=你的server地址
-TOKEN_MINT_ADDRESS=你的token地址
-TOKEN_DECIMALS=6
-TOKEN_NAME=USDC
-EOF
-
-# 创建 .env_client 文件（client 配置）
-cat > .env_client << EOF
-SVM_NETWORK=solana-localnet
-SVM_RPC_URL=http://127.0.0.1:8899
-USER_SVM_PRIVATE_KEY=你的client私钥
-EOF
-```
-
-#### 6. 启动服务
+#### 启动本地测试服务
 
 在三个不同的终端中分别运行：
 
-**终端 1 - Facilitator（支付促成者）:**
+**终端 1 - Facilitator :**
 ```bash
 pnpm run facilitator
 ```
@@ -393,153 +430,6 @@ pnpm run client
 # 清理被占用的端口
 lsof -ti:3002,4021 | xargs kill -9
 ```
-
-## 配置说明
-
-### Facilitator 配置 (`.env`)
-
-| 变量 | 描述 | 示例 |
-|------|------|------|
-| `SVM_PRIVATE_KEY` | Facilitator 的私钥（Base58 格式） | `4FdeM2Hyx...` |
-| `SVM_NETWORK` | Solana 网络 | `solana-localnet` / `solana-devnet` / `solana` |
-| `SVM_RPC_URL` | RPC 节点 URL | `http://127.0.0.1:8899` |
-| `PORT` | Facilitator 服务端口 | `3002` |
-
-### Server 配置 (`.env_server`)
-
-| 变量 | 描述 | 必需 |
-|------|------|------|
-| `FACILITATOR_URL` | Facilitator 服务地址 | ✅ |
-| `NETWORK` | 支付网络 | ✅ |
-| `ADDRESS` | 接收支付的地址 | ✅ |
-| `TOKEN_MINT_ADDRESS` | Token Mint 地址 | ⚠️ 可选 |
-| `TOKEN_DECIMALS` | Token 小数位数 | ⚠️ 可选 |
-| `TOKEN_NAME` | Token 名称 | ⚠️ 可选 |
-
-> ⚠️ 如果不配置 Token 相关变量，将使用默认的 USDC。
-
-### Client 配置 (`.env_client`)
-
-| 变量 | 描述 | 示例 |
-|------|------|------|
-| `SVM_NETWORK` | Solana 网络 | `solana-localnet` |
-| `SVM_RPC_URL` | RPC 节点 URL | `http://127.0.0.1:8899` |
-| `USER_SVM_PRIVATE_KEY` | 用户私钥（Base58 格式） | `3E8kogunw...` |
-
-## 使用示例
-
-### Server 端 - 保护 API 端点
-
-```typescript
-import express from "express";
-import { config } from "dotenv";
-import { paymentMiddleware, type X402Config } from "./lib/x402-express";
-
-config({ path: '.env_server' });
-
-const app = express();
-
-// 基础配置 - 使用默认 USDC
-app.use(
-  paymentMiddleware(
-    process.env.ADDRESS as string,  // 接收地址
-    {
-      "GET /weather": {
-        price: "$0.0018",  // 价格（美元）
-        network: "solana-localnet"
-      }
-    },
-    { url: process.env.FACILITATOR_URL }
-  )
-);
-
-// 定义受保护的路由
-app.get("/weather", (req, res) => {
-  res.json({
-    temperature: 72,
-    condition: "sunny",
-    location: "San Francisco"
-  });
-});
-
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
-});
-```
-
-### 自定义 Token 配置
-
-```typescript
-// 从环境变量读取 Token 配置
-const tokenMintAddress = process.env.TOKEN_MINT_ADDRESS;
-const tokenDecimals = parseInt(process.env.TOKEN_DECIMALS || "6");
-const tokenName = process.env.TOKEN_NAME;
-
-const x402Config: X402Config | undefined =
-  tokenMintAddress && tokenDecimals && tokenName
-    ? {
-        svmConfig: {
-          defaultToken: {
-            address: tokenMintAddress,
-            decimals: tokenDecimals,
-            name: tokenName,
-          },
-        },
-      }
-    : undefined;
-
-app.use(
-  paymentMiddleware(
-    payTo,
-    {
-      "GET /weather": {
-        price: "$0.0018",
-        network: "solana-localnet",
-      },
-    },
-    { url: facilitatorUrl },
-    undefined,  // paywall config
-    x402Config  // custom token config
-  )
-);
-```
-
-### Client 端 - 请求受保护的 API
-
-```typescript
-import { config } from "dotenv";
-import { createSigner } from "./lib/x402/svm";
-
-config({ path: '.env_client' });
-
-const svmPrivateKey = process.env.USER_SVM_PRIVATE_KEY!;
-const svmNetwork = process.env.SVM_NETWORK || "solana-localnet";
-
-async function main() {
-  const signer = await createSigner(svmNetwork, svmPrivateKey);
-
-  const response = await fetch("http://localhost:3000/weather", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    // SDK 会自动添加 X-PAYMENT header
-  });
-
-  if (response.ok) {
-    const data = await response.json();
-    console.log("Weather data:", data);
-  } else if (response.status === 402) {
-    const paymentInfo = await response.json();
-    console.log("Payment required:", paymentInfo);
-  }
-}
-
-main();
-```
-
-
-
 
 ## API 文档
 
@@ -613,8 +503,6 @@ pnpm run client
 ## 贡献指南
 
 欢迎贡献！详细的开发指南请参阅 [参与贡献](./Contribute.md) 部分。 
-
- 
 
 ## 许可证
 
