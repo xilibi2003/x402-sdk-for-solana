@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import express from "express";
-import { paymentMiddleware, Resource, type SolanaAddress, type X402Config } from "../lib/x402-express";
+import { paymentMiddleware } from "x402-sdk-for-solana";
+import type { Resource, SolanaAddress, X402Config } from "x402-sdk-for-solana";
 config({ path: '.env_server' });
 
 const facilitatorUrl = process.env.FACILITATOR_URL as Resource;

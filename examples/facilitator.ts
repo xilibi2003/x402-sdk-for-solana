@@ -1,7 +1,7 @@
 /* eslint-env node */
 import { config } from "dotenv";
 import express, { Request, Response } from "express";
-import { verify, settle } from "../lib/x402/facilitator";
+import { verify, settle } from "x402-sdk-for-solana/facilitator";
 import {
   PaymentRequirementsSchema,
   type PaymentRequirements,
@@ -16,7 +16,7 @@ import {
   SupportedPaymentKind,
   isSvmSignerWallet,
   type X402Config,
-} from "../lib/x402/types";
+} from "x402-sdk-for-solana/types";
 
 config();
 

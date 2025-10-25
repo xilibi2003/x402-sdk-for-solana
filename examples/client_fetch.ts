@@ -3,7 +3,7 @@ import {
   decodeXPaymentResponse,
   wrapFetchWithPayment,
   createSigner
-} from "../lib/x402-fetch";
+} from "x402-sdk-for-solana/fetch";
 
 config({ path: '.env_client' });
 

@@ -1,6 +1,6 @@
 {
   "name": "x402-sdk-for-solana",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Tinyxiong <xilibi2003@gmail.com>",
   "description": "TypeScript SDK for X402 protocol on Solana - enabling pay-per-use API access with SPL tokens",
   "main": "./dist/index.js",
@@ -26,13 +26,16 @@
     "./types": {
       "types": "./dist/lib/x402/types/index.d.ts",
       "import": "./dist/lib/x402/types/index.js"
+    },
+    "./fetch": {
+      "types": "./dist/lib/x402-fetch/index.d.ts",
+      "import": "./dist/lib/x402-fetch/index.js"
     }
   },
   "files": [
     "dist",
     "README.md",
-    "LICENSE",
-    "CUSTOM_TOKEN_CONFIG.md"
+    "LICENSE" 
   ],
   "scripts": {
     "build": "tsc",
@@ -57,8 +60,7 @@
     "express-middleware",
     "typescript"
   ],
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/xilibi2003/x402-sdk-for-solana"

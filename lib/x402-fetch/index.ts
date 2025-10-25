@@ -74,8 +74,8 @@ export function wrapFetchWithPayment(
 
     const network = isMultiNetworkSigner(walletClient)
       ? undefined
-      : evm.isSignerWallet(walletClient as typeof evm.EvmSigner)
-        ? ChainIdToNetwork[(walletClient as typeof evm.EvmSigner).chain?.id]
+      : evm.isSignerWallet(walletClient as evm.EvmSigner)
+        ? ChainIdToNetwork[(walletClient as evm.SignerWallet).chain?.id]
         : isSvmSignerWallet(walletClient)
           ? (["solana", "solana-devnet"] as Network[])
           : undefined;
