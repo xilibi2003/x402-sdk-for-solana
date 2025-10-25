@@ -36,8 +36,6 @@ async function main(): Promise<void> {
   const svmSigner = await createSigner(svmNetwork, svmPrivateKey);
   console.log("fetch payment");
 
-  // 配置自定义 RPC URL 以避免公共节点限流
-  // 可以使用 Helius, QuickNode, Alchemy 等提供商的 RPC URL
   const fetchWithPayment = wrapFetchWithPayment(
     fetch,
     svmSigner,
@@ -51,7 +49,6 @@ async function main(): Promise<void> {
   );
 
   try {
-    console.log(`fetching... `);
     const response = await fetchWithPayment(url, { method: "GET" });
     console.log("response received");
     const body = await response.json();
