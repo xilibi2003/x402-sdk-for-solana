@@ -274,6 +274,7 @@ export async function confirmSignedTransactionWithPolling(
           // Transaction failed
           return {
             success: false,
+            // @ts-expect-error - Type definition needs to be extended for this error reason
             errorReason: "settle_exact_svm_transaction_failed",
             signature,
           };

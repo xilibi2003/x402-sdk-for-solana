@@ -152,7 +152,7 @@ export function useFacilitator(facilitator?: FacilitatorConfig) {
     const urlParams = new URLSearchParams(
       Object.entries(config)
         .filter(([_, value]) => value !== undefined)
-        .map(([key, value]) => [key, value.toString()]),
+        .map(([key, value]) => [key, value.toString()]) as [string, string][],
     );
 
     const res = await fetch(`${url}/discovery/resources?${urlParams.toString()}`, {

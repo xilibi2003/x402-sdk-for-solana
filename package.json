@@ -1,14 +1,79 @@
 {
   "name": "x402-sdk-for-solana",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "author": "Tinyxiong <xilibi2003@gmail.com>",
+  "description": "TypeScript SDK for X402 protocol on Solana - enabling pay-per-use API access with SPL tokens",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./express": {
+      "types": "./dist/lib/x402-express/index.d.ts",
+      "import": "./dist/lib/x402-express/index.js"
+    },
+    "./client": {
+      "types": "./dist/lib/x402/client/index.d.ts",
+      "import": "./dist/lib/x402/client/index.js"
+    },
+    "./facilitator": {
+      "types": "./dist/lib/x402/facilitator/index.d.ts",
+      "import": "./dist/lib/x402/facilitator/index.js"
+    },
+    "./types": {
+      "types": "./dist/lib/x402/types/index.d.ts",
+      "import": "./dist/lib/x402/types/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CUSTOM_TOKEN_CONFIG.md"
+  ],
   "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prebuild": "pnpm clean",
+    "prepublishOnly": "pnpm build",
     "setup-localnet": "tsx scripts/setup-localnet.ts",
     "facilitator": "tsx examples/facilitator.ts",
     "client": "tsx examples/client_fetch.ts",
     "server": "tsx examples/server_express.ts 2>&1"
+  },
+  "keywords": [
+    "solana",
+    "spl-token",
+    "payment",
+    "x402",
+    "pay-per-use",
+    "micropayments",
+    "api-monetization",
+    "web3",
+    "blockchain",
+    "express-middleware",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xilibi2003/x402-sdk-for-solana"
+  },
+  "bugs": {
+    "url": "https://github.com/xilibi2003/x402-sdk-for-solana/issues"
+  },
+  "homepage": "https://github.com/xilibi2003/x402-sdk-for-solana#readme",
+  "peerDependencies": {
+    "express": "^4.18.2"
+  },
+  "peerDependenciesMeta": {
+    "express": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@scure/base": "^1.2.6",
@@ -17,26 +82,28 @@
     "@solana-program/token-2022": "^0.4.2",
     "@solana/kit": "^2.1.1",
     "@solana/transaction-confirmation": "^2.1.1",
-    "dotenv": "^16.4.7",
-    "express": "^4.18.2",
     "viem": "^2.38.3",
     "wagmi": "^2.15.6",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.24.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.19.23",
     "@typescript-eslint/eslint-plugin": "^8.29.1",
     "@typescript-eslint/parser": "^8.29.1",
+    "dotenv": "^16.4.7",
     "eslint": "^9.24.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsdoc": "^50.6.9",
     "eslint-plugin-prettier": "^5.2.6",
+    "express": "^4.18.2",
     "prettier": "3.5.2",
     "tsx": "^4.7.0",
     "typescript": "^5.3.0"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.11.0"
+  "packageManager": "pnpm@10.11.0",
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
