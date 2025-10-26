@@ -1,6 +1,6 @@
 {
   "name": "x402-sdk-for-solana",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Tinyxiong <xilibi2003@gmail.com>",
   "description": "TypeScript SDK for X402 protocol on Solana - enabling pay-per-use API access with SPL tokens",
   "main": "./dist/index.js",
@@ -35,7 +35,7 @@
   "files": [
     "dist",
     "README.md",
-    "LICENSE" 
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
