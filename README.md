@@ -1,6 +1,6 @@
 # X402 SDK for Solana
 
-一个基于 X402 协议的 Solana 支付网关的 TypeScript SDK，快速为你的应用接入访问付费功能（Pay-per-use）， 支持配置任意 Solana 网络、配置任意的 SPL Token 。
+一个基于 X402 协议的 Solana 支付网关的 TypeScript SDK，快速为你的应用接入访问付费功能（Pay-per-use），支持配置任意 Solana 网络、配置任意的 SPL Token 。
 
 [![npm version](https://img.shields.io/npm/v/x402-sdk-for-solana.svg)](https://www.npmjs.com/package/x402-sdk-for-solana)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

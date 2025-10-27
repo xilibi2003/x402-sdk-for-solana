@@ -146,11 +146,11 @@ pnpm setup-localnet
 
 3. **配置环境变量**
 
-将脚本输出的环境变量分别保存到 `.env`、`.env_server` 和 `.env_client` 文件中。
+将脚本输出的环境变量分别保存到 `.env_facilitator`、`.env_server` 和 `.env_client` 文件中。
 
 4. **启动测试服务**
 
-在三个不同的终端中分别运行：
+切换到 expamples 目录下，在三个不同的终端中分别运行：
 
 ```bash
 # 终端 1 - Facilitator
