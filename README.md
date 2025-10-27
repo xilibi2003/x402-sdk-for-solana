@@ -7,8 +7,8 @@
 
 ## 目录
 
-- [功能特性](#功能特性)
-- [安装](#安装)
+- [X402 介绍](#X402 介绍)
+- [如何集成](#如何集成)
 - [快速开始](#快速开始)
   - [在 Server 中集成](#在-server-中集成)
   - [在 Client 中集成](#在-client-中集成)
@@ -17,16 +17,11 @@
 - [API 文档](#api-文档)
 
 
-## X402 工作流程
+## X402 介绍
 
-### 角色说明
+X402 工作流程：
 
-- **Client**: 发起请求并支付费用的用户
-- **Server**: 提供受保护 API 的服务提供者
-- **Facilitator**: 负责交易验证和提交
-- **Solana Network**: 区块链网络，记录所有交易
-
-工作流程：
+![](./pay_flow.png)
 
 1. **Client** 向 Server 发送请求
 2. **Server** 返回 402 状态码和支付要求
@@ -37,10 +32,17 @@
 7. **Server** 返回受保护的数据
 
 
+### 角色说明
 
-## 功能特性
+- **Client**: 发起请求并支付费用的用户
+- **Server**: 提供受保护 API 的服务提供者
+- **Facilitator**: 负责交易验证和提交
+- **Solana Network**: 区块链网络，记录所有交易
 
-- ✅ **Solana 支付集成**：支持通过 SPL Token 进行小额支付
+## SDK 功能特性
+
+本 SDK 方便开发者在自己的应用中接入 Solana 支付。 支持开发自己的 Facilitator 以及服务端、客户端集成该 SDK，SDK 主要特性：
+
 - ✅ **Express 中间件**：简单易用的 Express 中间件，一行代码保护 API 端点
 - ✅ **客户端 Fetch 封装**：自动处理 402 支付的 fetch 包装器
 - ✅ **Facilitator 支持**：内置支付验证和结算服务
@@ -48,7 +50,21 @@
 - ✅ **多网络支持**：支持 solana-localnet、solana-devnet 和 solana
 - ✅ **TypeScript 支持**：完整的类型定义
 
-## 安装
+## 如何集成
+
+### 项目配置要求
+ 使用 **Node.js**: >= 18.0.0 的项目工程，工程配置：
+
+```json
+{
+  "type": "module"
+}
+```
+
+以便支持 **ES Module (ESM)** 。
+
+
+### 安装 SDK
 
 使用 npm、yarn 或 pnpm 安装 SDK：
 
@@ -63,23 +79,6 @@ yarn add x402-sdk-for-solana
 pnpm add x402-sdk-for-solana
 ```
 
-### 必需依赖
-
-- **Node.js**: >= 18.0.0
-
-### 项目配置
-
-**重要**: 由于 x402-sdk-for-solana 使用 **ES Module (ESM)** 格式发布，您的项目需要在 `package.json` 中添加以下配置：
-
-```json
-{
-  "type": "module"
-}
-```
-
-这告诉 Node.js 将您的项目作为 ES Module 处理，这样才能正确导入 SDK 的模块。
-
- 
 
 ## 快速开始
 
@@ -89,13 +88,8 @@ pnpm add x402-sdk-for-solana
 
 部署你自己的 Facilitator 服务来验证和结算支付：
 
-#### 1. 安装
-
-```bash
-npm install x402-sdk-for-solana express
-```
-
-#### 2. 配置环境变量
+ 
+#### 配置环境变量
 
 ```bash
 # 创建 .env 文件（facilitator 配置）
@@ -195,13 +189,6 @@ app.listen(3002, () => {
 
 在你的服务端应用中集成 X402 SDK，实现在用户支付后才可访问某个服务器资源。
 
-#### 1. 安装
-
-```bash
-npm install x402-sdk-for-solana express dotenv
-```
-
-
 #### 配置 server 环境变量
 
 ```
@@ -228,7 +215,7 @@ TOKEN_NAME=USDC
 参考[本地开发和测试](#本地开发和测试)
 
 
-#### 2. 创建 Express 服务器
+#### 创建 Express 服务器（Example）
 
 ```typescript
 import express from "express";
@@ -291,17 +278,9 @@ app.use(
 
 ### 在 Client 中集成
 
-在你的客户端应用中集成 X402 SDK，调用受保护的 API：
+在你的客户端应用中集成 X402 SDK，调用需要付费的URL 时，自动完成签名。
 
-#### 1. 安装
-
-```bash
-npm install x402-sdk-for-solana
-```
-
-
-#### 2. 配置 client 环境变量
-
+#### 1. 配置 client 环境变量
 
 ```
 SVM_NETWORK=solana-localnet
@@ -316,7 +295,7 @@ USER_SVM_PRIVATE_KEY=你的client私钥
 | `USER_SVM_PRIVATE_KEY` | 用户私钥（Base58 格式） | `3E8kogunw...` |
 
 
-#### 3. 使用 Fetch 包装器
+#### 2. 使用 Fetch 包装器
 
 ```typescript
 import {
@@ -368,7 +347,7 @@ callProtectedAPI();
 
 ### 本地开发和测试 
 
-example 准备了一个简单的示例，方便本地测试。
+examples 目录准备了一个简单的示例，方便本地测试。
 
 #### 启动 Solana Localnet
 
@@ -380,11 +359,12 @@ solana-test-validator
 
 保持该终端运行，在新终端中继续以下步骤。
 
-#### 自动化设置脚本 
+#### 自动化设置账号脚本【可选】
 
 ```bash
 pnpm setup-localnet
 ```
+
 脚本输出示例：
 
 ```
@@ -426,28 +406,21 @@ USER_SVM_PRIVATE_KEY=3E8kogunw...
 
 **终端 1 - Facilitator :**
 ```bash
-pnpm run facilitator
+pnpm run 402_facilitator
 ```
 
 **终端 2 - Server（API 服务器）:**
 ```bash
-pnpm run server
+pnpm run 402_server
 ```
 
 **终端 3 - Client（客户端测试）:**
 ```bash
-pnpm run client
+pnpm run 402_client
 ```
 
 如果一切正常，你应该看到客户端成功请求并支付了 API 调用费用！
 
-### 快捷命令
-
-清理端口占用并重启服务：
-```bash
-# 清理被占用的端口
-lsof -ti:3002,4021 | xargs kill -9
-```
 
 ## API 文档
 
@@ -860,18 +833,23 @@ async function main() {
 ### 参考示例 及 NPM 脚本
 
 ```bash
-# 自动化设置 localnet 环境
+# 自动化设置 localnet 环境变量
 pnpm setup-localnet
+```
 
+在 examples 目录下仔细：
+
+```
 # 启动 facilitator
-pnpm run facilitator
+pnpm run 402_facilitator
 
 # 启动 server
-pnpm run server
+pnpm run 402_server
 
 # 运行 client
-pnpm run client
+pnpm run 402_client
 ```
+
 
 
 ## 贡献指南

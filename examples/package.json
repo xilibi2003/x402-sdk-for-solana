@@ -6,9 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "facilitator": "tsx src/my_facilitator.ts",
-    "client": "tsx src/client_fetch.ts",
-    "server": "tsx src/server_express.ts 2>&1"
+    "402_facilitator": "tsx src/my_facilitator.ts",
+    "402_client": "tsx src/client_fetch.ts",
+    "402_server": "tsx src/server_express.ts"
   },
   "keywords": [],
   "author": "",
