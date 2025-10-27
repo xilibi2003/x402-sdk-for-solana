@@ -1,59 +1,60 @@
 # X402 SDK for Solana
 
-一个基于 X402 协议的 Solana 支付网关的 TypeScript SDK(基于 [x402](https://github.com/coinbase/x402) 实现)，快速为你的应用接入访问付费功能（Pay-per-use），支持配置任意 Solana 网络、配置任意的 SPL Token 。
+[中文 Readme](./README_zh.md)
+A TypeScript SDK for Solana payment gateway based on the X402 protocol (implemented based on [x402](https://github.com/coinbase/x402)). Quickly integrate pay-per-use functionality into your application, supporting any Solana network and any SPL Token.
 
 [![npm version](https://img.shields.io/npm/v/x402-sdk-for-solana.svg)](https://www.npmjs.com/package/x402-sdk-for-solana)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 目录
+## Table of Contents
 
-- [X402 介绍](#X402 介绍)
-- [如何集成](#如何集成)
-- [快速开始](#快速开始)
-  - [在 Server 中集成](#在-server-中集成)
-  - [在 Client 中集成](#在-client-中集成)
-  - [创建自己的 Facilitator](#创建自己的-facilitator)
-  - [本地开发和测试](#本地开发和测试)
-- [API 文档](#api-文档)
+- [X402 Introduction](#x402-introduction)
+- [Integration](#integration)
+- [Quick Start](#quick-start)
+  - [Server Integration](#server-integration)
+  - [Client Integration](#client-integration)
+  - [Create Your Own Facilitator](#create-your-own-facilitator)
+  - [Local Development and Testing](#local-development-and-testing)
+- [API Documentation](#api-documentation)
 
 
-## X402 介绍
+## X402 Introduction
 
-X402 工作流程：
+X402 Workflow:
 
 ![](./pay_flow.png)
 
-1. **Client** 向 Server 发送请求
-2. **Server** 返回 402 状态码和支付要求
-3. **Client** 创建并签署支付交易
-4. **Client** 将签名的交易附加到 X-PAYMENT header 重新请求
-5. **Server** 通过 **Facilitator** 验证支付
-6. **Facilitator** 将交易提交到 **Solana** 网络
-7. **Server** 返回受保护的数据
+1. **Client** sends a request to the Server
+2. **Server** returns a 402 status code with payment requirements
+3. **Client** creates and signs a payment transaction
+4. **Client** attaches the signed transaction to the X-PAYMENT header and resends the request
+5. **Server** verifies payment through the **Facilitator**
+6. **Facilitator** submits the transaction to the **Solana** network
+7. **Server** returns protected data
 
 
-### 角色说明
+### Roles
 
-- **Client**: 发起请求并支付费用的用户
-- **Server**: 提供受保护 API 的服务提供者
-- **Facilitator**: 负责交易验证和提交
-- **Solana Network**: 区块链网络，记录所有交易
+- **Client**: User who initiates requests and pays fees
+- **Server**: Service provider offering protected APIs
+- **Facilitator**: Responsible for transaction verification and submission
+- **Solana Network**: Blockchain network that records all transactions
 
-## SDK 功能特性
+## SDK Features
 
-本 SDK 方便开发者在自己的应用中接入 Solana 支付。 支持开发自己的 Facilitator 以及服务端、客户端集成该 SDK，SDK 主要特性：
+This SDK helps developers integrate Solana payments into their applications. It supports building your own Facilitator as well as server and client integration. Main features include:
 
-- ✅ **Express 中间件**：简单易用的 Express 中间件，一行代码保护 API 端点
-- ✅ **客户端 Fetch 封装**：自动处理 402 支付的 fetch 包装器
-- ✅ **Facilitator 支持**：内置支付验证和结算服务
-- ✅ **自定义 Token 支持**：支持任何 SPL Token
-- ✅ **多网络支持**：支持 solana-localnet、solana-devnet 和 solana
-- ✅ **TypeScript 支持**：完整的类型定义
+- ✅ **Express Middleware**: Easy-to-use Express middleware to protect API endpoints with one line of code
+- ✅ **Client Fetch Wrapper**: Fetch wrapper that automatically handles 402 payments
+- ✅ **Facilitator Support**: Built-in payment verification and settlement services
+- ✅ **Custom Token Support**: Supports any SPL Token
+- ✅ **Multi-Network Support**: Supports solana-localnet, solana-devnet, and solana
+- ✅ **TypeScript Support**: Complete type definitions
 
-## 如何集成
+## Integration
 
-### 项目配置要求
- 使用 **Node.js**: >= 18.0.0 的项目工程，工程配置：
+### Project Configuration Requirements
+Projects using **Node.js**: >= 18.0.0 should configure:
 
 ```json
 {
@@ -61,55 +62,57 @@ X402 工作流程：
 }
 ```
 
-以便支持 **ES Module (ESM)** 。
+To support **ES Module (ESM)**.
 
 
-### 安装 SDK
+### Install SDK
 
-使用 npm、yarn 或 pnpm 安装 SDK：
+Install the SDK using npm, yarn, or pnpm:
 
 ```bash
-# 使用 npm
+# Using npm
 npm install x402-sdk-for-solana
 
-# 使用 yarn
+# Using yarn
 yarn add x402-sdk-for-solana
 
-# 使用 pnpm
+# Using pnpm
 pnpm add x402-sdk-for-solana
 ```
 
 
-## 快速开始
+## Quick Start
 
-根据你的使用场景，选择相应的集成方式：
+Choose the appropriate integration method based on your use case:
 
-### 创建自己的 Facilitator
+### Create Your Own Facilitator
 
-部署你自己的 Facilitator 服务来验证和结算支付：
+Deploy your own Facilitator service to verify and settle payments:
 
- 
-#### 配置环境变量
+
+#### Configure Environment Variables
 
 ```bash
-# 创建 .env 文件（facilitator 配置）
-SVM_PRIVATE_KEY=你的facilitator私钥
+# Create .env file (facilitator configuration)
+SVM_PRIVATE_KEY=your_facilitator_private_key_as_fee_payer
 SVM_NETWORK=solana-localnet
 SVM_RPC_URL=http://127.0.0.1:8899
 PORT=3002
 ```
 
-| 变量 | 描述 | 示例 |
+| Variable | Description | Example |
 |------|------|------|
-| `SVM_PRIVATE_KEY` | Facilitator 的私钥（Base58 格式） | `4FdeM2Hyx...` |
-| `SVM_NETWORK` | Solana 网络 | `solana-localnet` / `solana-devnet` / `solana` |
-| `SVM_RPC_URL` | RPC 节点 URL | `http://127.0.0.1:8899` |
-| `PORT` | Facilitator 服务端口 | `3002` |
+| `SVM_PRIVATE_KEY` | Facilitator's private key (Base58 format) | `4FdeM2Hyx...` |
+| `SVM_NETWORK` | Solana network | `solana-localnet` / `solana-devnet` / `solana` |
+| `SVM_RPC_URL` | RPC node URL | `http://127.0.0.1:8899` |
+| `PORT` | Facilitator service port | `3002` |
 
 
-可参考[本地开发和测试](#本地开发和测试) 
+See [Local Development and Testing](#local-development-and-testing) for reference
 
-#### 3. 创建 Facilitator 服务
+#### Create Facilitator Service
+
+Example Code:
 
 ```typescript
 import express from "express";
@@ -129,12 +132,12 @@ const PRIVATE_KEY = process.env.SVM_PRIVATE_KEY!;
 const NETWORK = process.env.SVM_NETWORK || "solana-devnet";
 const RPC_URL = process.env.SVM_RPC_URL;
 
-// 配置 
+// Configuration
 const x402Config: X402Config | undefined = RPC_URL
   ? { svmConfig: { rpcUrl: RPC_URL } }
   : undefined;
 
-// 验证端点
+// Verification endpoint
 app.post("/verify", async (req, res) => {
   try {
     const { paymentPayload, paymentRequirements } = req.body;
@@ -151,7 +154,7 @@ app.post("/verify", async (req, res) => {
   }
 });
 
-// 结算端点
+// Settlement endpoint
 app.post("/settle", async (req, res) => {
   try {
     const { paymentPayload, paymentRequirements } = req.body;
@@ -168,7 +171,7 @@ app.post("/settle", async (req, res) => {
   }
 });
 
-// 支持的支付类型
+// Supported payment types
 app.get("/supported", async (req, res) => {
   const signer = await createSigner(NETWORK, PRIVATE_KEY);
   res.json({
@@ -185,37 +188,37 @@ app.listen(3002, () => {
 });
 ```
 
-### 在 Server 中集成
+### Server Integration
 
-在你的服务端应用中集成 X402 SDK，实现在用户支付后才可访问某个服务器资源。
+Integrate the X402 SDK into your server application to enable access to server resources only after user payment.
 
-#### 配置 server 环境变量
+#### Configure Server Environment Variables
 
 ```
 FACILITATOR_URL=http://localhost:3002
 NETWORK=solana-localnet
-ADDRESS=你的server地址
-TOKEN_MINT_ADDRESS=你的token地址
+ADDRESS=your_server_address
+TOKEN_MINT_ADDRESS=your_token_address
 TOKEN_DECIMALS=6
 TOKEN_NAME=USDC
 ```
 
-| 变量 | 描述 | 必需 |
+| Variable | Description | Required |
 |------|------|------|
-| `FACILITATOR_URL` | Facilitator 服务地址 | ✅ |
-| `NETWORK` | 支付网络 | ✅ |
-| `ADDRESS` | 接收支付的地址 | ✅ |
-| `TOKEN_MINT_ADDRESS` | Token Mint 地址 | ⚠️ 可选 |
-| `TOKEN_DECIMALS` | Token 小数位数 | ⚠️ 可选 |
-| `TOKEN_NAME` | Token 名称 | ⚠️ 可选 |
+| `FACILITATOR_URL` | Facilitator service address | ✅ |
+| `NETWORK` | Payment network | ✅ |
+| `ADDRESS` | Payment receiving address | ✅ |
+| `TOKEN_MINT_ADDRESS` | Token Mint address | ⚠️ Optional |
+| `TOKEN_DECIMALS` | Token decimal places | ⚠️ Optional |
+| `TOKEN_NAME` | Token name | ⚠️ Optional |
 
-> ⚠️ 如果不配置 Token 相关变量，将使用 `lib/x402/types/shared/evm/config.ts`  默认定义的 USDC。
-
-
-参考[本地开发和测试](#本地开发和测试)
+> ⚠️ If Token-related variables are not configured, the default USDC defined in `lib/x402/types/shared/evm/config.ts` will be used.
 
 
-#### 创建 Express 服务器（Example）
+See [Local Development and Testing](#local-development-and-testing) for reference
+
+
+#### Create Express Server (Example)
 
 ```typescript
 import express from "express";
@@ -224,21 +227,21 @@ import type { Resource, SolanaAddress, X402Config } from "x402-sdk-for-solana";
 
 const app = express();
 
-// 配置支付中间件
+// Configure payment middleware
 app.use(
   paymentMiddleware(
-    "YOUR_SOLANA_ADDRESS" as SolanaAddress,  // 接收支付的地址
+    "YOUR_SOLANA_ADDRESS" as SolanaAddress,  // Payment receiving address
     {
       "GET /weather": {
-        price: "0.0018",  // 每次请求需要支付多少的 Token 
+        price: "0.0018",  // Token amount required per request
         network: "solana-devnet"
       }
     },
-    { url: "https://your-facilitator-url.com" }  // Facilitator 服务地址
+    { url: "https://your-facilitator-url.com" }  // Facilitator service address
   )
 );
 
-// 定义受保护的路由
+// Define protected route
 app.get("/weather", (req, res) => {
   res.json({
     temperature: 72,
@@ -252,7 +255,7 @@ app.listen(4021, () => {
 });
 ```
 
-#### 3. 使用自定义 Token
+#### Using Custom Token
 
 ```typescript
 const x402Config: X402Config = {
@@ -271,31 +274,31 @@ app.use(
     routes,
     { url: facilitatorUrl },
     undefined,  // paywall config
-    x402Config  // 传入自定义 token 配置
+    x402Config  // Pass custom token configuration
   )
 );
 ```
 
-### 在 Client 中集成
+### Client Integration
 
-在你的客户端应用中集成 X402 SDK，调用需要付费的URL 时，自动完成签名。
+Integrate the X402 SDK into your client application to automatically complete signatures when calling payment-required URLs.
 
-#### 1. 配置 client 环境变量
+#### Configure Client Environment Variables
 
 ```
 SVM_NETWORK=solana-localnet
 SVM_RPC_URL=http://127.0.0.1:8899
-USER_SVM_PRIVATE_KEY=你的client私钥
+USER_SVM_PRIVATE_KEY=your_client_private_key
 ```
 
-| 变量 | 描述 | 示例 |
+| Variable | Description | Example |
 |------|------|------|
-| `SVM_NETWORK` | Solana 网络 | `solana-localnet` |
-| `SVM_RPC_URL` | RPC 节点 URL | `http://127.0.0.1:8899` |
-| `USER_SVM_PRIVATE_KEY` | 用户私钥（Base58 格式） | `3E8kogunw...` |
+| `SVM_NETWORK` | Solana network | `solana-localnet` |
+| `SVM_RPC_URL` | RPC node URL | `http://127.0.0.1:8899` |
+| `USER_SVM_PRIVATE_KEY` | User private key (Base58 format) | `3E8kogunw...` |
 
 
-#### 2. 使用 Fetch 包装器
+#### Using the Fetch Wrapper
 
 ```typescript
 import {
@@ -305,28 +308,28 @@ import {
 } from "x402-sdk-for-solana/fetch";
 
 async function callProtectedAPI() {
-  // 创建签名者
+  // Create signer
   const signer = await createSigner(
-    "solana-devnet",  // 网络
-    "YOUR_PRIVATE_KEY_BASE58"  // 你的私钥
+    "solana-devnet",  // Network
+    "YOUR_PRIVATE_KEY_BASE58"  // Your private key
   );
 
-  // 包装 fetch
+  // Wrap fetch
   const fetchWithPayment = wrapFetchWithPayment(
     fetch,
     signer,
     undefined,
-    undefined, 
+    undefined,
     {
       svmConfig: {
-        rpcUrl: "https://api.devnet.solana.com"  // 自定义 RPC URL（可选）
+        rpcUrl: "https://api.devnet.solana.com"  // Custom RPC URL (optional)
       }
     }
   );
 
-  // 使用 fetchWithPayment 发起请求
-  // 函数检查到 402 状态码后，解析支付要求 header 中的 `x-payment-required` 
-  //  创建并签署支付交易，附加支付信息（x-payment header）重新发送请求
+  // Use fetchWithPayment to make requests
+  // The function detects 402 status code, parses payment requirements from the `x-payment-required` header
+  // Creates and signs payment transaction, attaches payment info (x-payment header) and resends request
   const response = await fetchWithPayment("http://localhost:4021/weather", {
     method: "GET"
   });
@@ -334,7 +337,7 @@ async function callProtectedAPI() {
   const data = await response.json();
   console.log("Response:", data);
 
-  // 解析支付响应
+  // Parse payment response
   const paymentResponse = decodeXPaymentResponse(
     response.headers.get("x-payment-response")!
   );
@@ -345,27 +348,27 @@ callProtectedAPI();
 ```
 
 
-### 本地开发和测试 
+### Local Development and Testing
 
-examples 目录准备了一个简单的示例，方便本地测试。
+The examples directory contains a simple example for local testing.
 
-#### 启动 Solana Localnet
+#### Start Solana Localnet
 
-在终端中运行：
+Run in terminal:
 
 ```bash
 solana-test-validator
 ```
 
-保持该终端运行，在新终端中继续以下步骤。
+Keep this terminal running and continue with the following steps in a new terminal.
 
-#### 自动化设置账号脚本【可选】
+#### Automated Account Setup Script [Optional]
 
 ```bash
 pnpm setup-localnet
 ```
 
-脚本输出示例：
+Script output example:
 
 ```
 === Setup Complete! ===
@@ -391,123 +394,121 @@ USER_SVM_PRIVATE_KEY=3E8kogunw...
 ```
 
 
-运行自动化设置脚本，它会：
-- 生成 3 个密钥对（facilitator、server、client）
-- 为所有账户空投 SOL
-- 创建自定义 SPL Token
-- 为所有账户创建 Token 账户并充值
-- 输出配置好的环境变量
+The automated setup script will:
+- Generate 3 key pairs (facilitator, server, client)
+- Airdrop SOL to all accounts
+- Create custom SPL Token
+- Create token accounts for all accounts and fund them
+- Output configured environment variables
 
+#### Start Local Test Services
 
+Run in three different terminals:
 
-#### 启动本地测试服务
-
-在三个不同的终端中分别运行：
-
-**终端 1 - Facilitator :**
+**Terminal 1 - Facilitator:**
 ```bash
 pnpm run 402_facilitator
 ```
 
-**终端 2 - Server（API 服务器）:**
+**Terminal 2 - Server (API server):**
 ```bash
 pnpm run 402_server
 ```
 
-**终端 3 - Client（客户端测试）:**
+**Terminal 3 - Client (client test):**
 ```bash
 pnpm run 402_client
 ```
 
-如果一切正常，你应该看到客户端成功请求并支付了 API 调用费用！
+If everything works correctly, you should see the client successfully request and pay for API call fees!
 
 
-## API 文档
+## API Documentation
 
 ### `paymentMiddleware(payTo, routes, facilitator?, paywall?, x402Config?)`
 
-创建 Express 支付中间件，为指定的路由添加 X402 支付保护。
+Create Express payment middleware to add X402 payment protection to specified routes.
 
-#### 功能概述
+#### Feature Overview
 
-`paymentMiddleware` 是一个智能的 Express 中间件，它会：
+`paymentMiddleware` is an intelligent Express middleware that:
 
-1. **拦截请求** - 检查请求是否匹配受保护的路由，确保只有付费用户才能访问受保护内容
-2. **验证支付** - 通过 Facilitator 验证用户的支付凭证
-3. **执行路由** - 验证通过后执行实际的业务逻辑
-4. **结算支付** - 只有在路由成功执行后才提交支付到区块链
-5. **返回响应** - 将受保护的内容返回给用户
+1. **Intercepts requests** - Checks if requests match protected routes, ensuring only paying users can access protected content
+2. **Verifies payment** - Verifies user payment credentials through Facilitator
+3. **Executes routes** - Executes actual business logic after verification
+4. **Settles payment** - Submits payment to blockchain only after successful route execution
+5. **Returns response** - Returns protected content to the user
 
 
-#### 工作流程
+#### Workflow
 
 ```
-请求到达
+Request arrives
   ↓
-检查是否匹配受保护路由
-  ├─ 不匹配 → 直接放行
-  └─ 匹配 ↓
-检查 X-PAYMENT header
-  ├─ 无 → 返回 402 + 支付要求
-  │   ├─ 浏览器 → HTML Paywall
-  │   └─ API → JSON 格式
-  └─ 有 ↓
-验证支付
-  ├─ 失败 → 返回 402 错误
-  └─ 成功 ↓
-执行受保护的路由
+Check if matches protected route
+  ├─ No match → Pass through
+  └─ Match ↓
+Check X-PAYMENT header
+  ├─ None → Return 402 + payment requirements
+  │   ├─ Browser → HTML Paywall
+  │   └─ API → JSON format
+  └─ Present ↓
+Verify payment
+  ├─ Failed → Return 402 error
+  └─ Success ↓
+Execute protected route
   ↓
-检查执行结果
-  ├─ 失败 (statusCode >= 400) → 不结算支付
-  └─ 成功 ↓
-结算支付（提交到区块链）
+Check execution result
+  ├─ Failed (statusCode >= 400) → Don't settle payment
+  └─ Success ↓
+Settle payment (submit to blockchain)
   ↓
-返回受保护内容 + X-PAYMENT-RESPONSE
+Return protected content + X-PAYMENT-RESPONSE
 ```
 
-#### 参数详解
+#### Parameter Details
 
-| 参数 | 类型 | 必需 | 说明 |
+| Parameter | Type | Required | Description |
 |------|------|------|------|
-| `payTo` | `Address \| SolanaAddress` | ✅ | 接收支付的地址 |
-| `routes` | `RoutesConfig` | ✅ | 路由配置对象，定义哪些路由需要支付以及价格 |
-| `facilitator` | `FacilitatorConfig` | ⚠️ | Facilitator 服务配置，用于验证和结算支付 |
-| `paywall` | `PaywallConfig` | ⚠️ | Paywall 配置，用于自定义浏览器用户看到的支付页面 |
-| `x402Config` | `X402Config` | ⚠️ | X402 自定义配置，如自定义 RPC URL 和 Token |
+| `payTo` | `Address \| SolanaAddress` | ✅ | Payment receiving address |
+| `routes` | `RoutesConfig` | ✅ | Route configuration object defining which routes require payment and pricing |
+| `facilitator` | `FacilitatorConfig` | ⚠️ | Facilitator service configuration for payment verification and settlement |
+| `paywall` | `PaywallConfig` | ⚠️ | Paywall configuration for customizing payment page shown to browser users |
+| `x402Config` | `X402Config` | ⚠️ | X402 custom configuration, such as custom RPC URL and Token |
 
-#### 类型定义
+#### Type Definitions
 
 ##### RoutesConfig
 
 ```typescript
 type RoutesConfig = {
   [route: string]: {
-    price: string | number;  // 美元价格（如 "0.01"）或原子单位（如 10000）
-    network: Network;        // 支付网络：'solana-localnet' | 'solana-devnet' | 'solana'
+    price: string | number;  // USD price (e.g., "0.01") or atomic units (e.g., 10000)
+    network: Network;        // Payment network: 'solana-localnet' | 'solana-devnet' | 'solana'
     config?: {
-      description?: string;        // 端点描述
-      mimeType?: string;           // 响应的 MIME 类型
-      maxTimeoutSeconds?: number;  // 最大超时时间（默认 60 秒）
-      discoverable?: boolean;      // 是否可被发现（默认 true）
-      customPaywallHtml?: string;  // 自定义 Paywall HTML
+      description?: string;        // Endpoint description
+      mimeType?: string;           // Response MIME type
+      maxTimeoutSeconds?: number;  // Maximum timeout (default 60 seconds)
+      discoverable?: boolean;      // Whether discoverable (default true)
+      customPaywallHtml?: string;  // Custom Paywall HTML
     };
   };
 };
 ```
 
-**路由模式支持：**
-- `"GET /weather"` - 精确匹配
-- `"POST /api/*"` - 通配符匹配
-- `"/premium/*"` - 匹配所有 HTTP 方法
+**Supported Route Patterns:**
+- `"GET /weather"` - Exact match
+- `"POST /api/*"` - Wildcard match
+- `"/premium/*"` - Match all HTTP methods
 
 ##### FacilitatorConfig
 
 ```typescript
 type FacilitatorConfig = {
-  url: string;  // Facilitator 服务地址
+  url: string;  // Facilitator service address
   createAuthHeaders?: () => Promise<{
-    verify?: Record<string, string>;   // 验证端点的认证头
-    settle?: Record<string, string>;   // 结算端点的认证头
+    verify?: Record<string, string>;   // Authentication headers for verify endpoint
+    settle?: Record<string, string>;   // Authentication headers for settle endpoint
   }>;
 };
 ```
@@ -516,33 +517,33 @@ type FacilitatorConfig = {
 
 ```typescript
 type PaywallConfig = {
-  cdpClientKey?: string;         // Coinbase Developer Platform API 密钥
-  appName?: string;              // 应用名称，显示在钱包连接界面
-  appLogo?: string;              // 应用 Logo URL
-  sessionTokenEndpoint?: string; // 会话令牌端点（用于 Onramp）
+  cdpClientKey?: string;         // Coinbase Developer Platform API key
+  appName?: string;              // Application name displayed in wallet connection interface
+  appLogo?: string;              // Application logo URL
+  sessionTokenEndpoint?: string; // Session token endpoint (for Onramp)
 };
 ```
 
-**说明：** Paywall 配置仅在浏览器用户访问时生效，用于自定义支付页面的品牌和体验。
+**Note:** Paywall configuration only takes effect when browser users access, used to customize payment page branding and experience.
 
 ##### X402Config
 
 ```typescript
 interface X402Config {
   svmConfig?: {
-    rpcUrl?: string;  // 自定义 Solana RPC URL
+    rpcUrl?: string;  // Custom Solana RPC URL
     defaultToken?: {
-      address: string;   // Token Mint 地址
-      decimals: number;  // Token 小数位数
-      name: string;      // Token 名称
+      address: string;   // Token Mint address
+      decimals: number;  // Token decimal places
+      name: string;      // Token name
     };
   };
 }
 ```
 
-#### 使用示例
+#### Usage Examples
 
-**基础用法：**
+**Basic Usage:**
 
 ```typescript
 import express from "express";
@@ -570,19 +571,19 @@ app.get("/weather", (req, res) => {
 app.listen(4021);
 ```
 
-**高级用法：**
+**Advanced Usage:**
 
 ```typescript
 app.use(
   paymentMiddleware(
     "YOUR_SOLANA_ADDRESS",
     {
-      // 不同路由不同价格
+      // Different prices for different routes
       "GET /weather": {
         price: 0.01,
         network: "solana-devnet",
         config: {
-          description: "实时天气数据",
+          description: "Real-time weather data",
           maxTimeoutSeconds: 120
         }
       },
@@ -590,11 +591,11 @@ app.use(
         price: 0.1,
         network: "solana-devnet",
         config: {
-          description: "高级 API 服务"
+          description: "Premium API service"
         }
       }
     },
-    // Facilitator 配置
+    // Facilitator configuration
     {
       url: "https://your-facilitator.com",
       createAuthHeaders: async () => ({
@@ -602,13 +603,13 @@ app.use(
         settle: { "Authorization": "Bearer token" }
       })
     },
-    // Paywall 配置
+    // Paywall configuration
     {
       appName: "My Weather API",
       appLogo: "/logo.png",
       cdpClientKey: "your-cdp-key"
     },
-    // X402 配置
+    // X402 configuration
     {
       svmConfig: {
         rpcUrl: "http://localhost:8899",
@@ -626,77 +627,77 @@ app.use(
 
 ---
 
-### 客户端 API `wrapFetchWithPayment(fetch, walletClient, maxValue?, paymentRequirementsSelector?, config?)`
+### Client API `wrapFetchWithPayment(fetch, walletClient, maxValue?, paymentRequirementsSelector?, config?)`
 
-创建一个支持 X402 自动支付的 fetch 包装器。
+Create a fetch wrapper that supports X402 automatic payment.
 
-#### 功能概述
+#### Feature Overview
 
-`wrapFetchWithPayment` 将标准的 `fetch` API 包装成一个"支付感知"的版本，它会：
+`wrapFetchWithPayment` wraps the standard `fetch` API into a "payment-aware" version that:
 
-1. **发送初始请求** - 像普通 fetch 一样发送请求
-2. **检测 402 响应** - 自动识别需要支付的端点
-3. **解析支付要求** - 从响应中提取支付信息
-4. **验证金额** - 检查支付金额是否在允许的范围内， maxValue 防止意外的大额支付
-5. **创建并签署支付** - 使用提供的钱包自动创建支付交易
-6. **重新请求** - 附加支付凭证重新发送请求
-7. **返回内容** - 返回受保护的内容
+1. **Sends initial request** - Sends request like normal fetch
+2. **Detects 402 response** - Automatically identifies payment-required endpoints
+3. **Parses payment requirements** - Extracts payment information from response
+4. **Verifies amount** - Checks if payment amount is within allowed range, maxValue prevents unexpected large payments
+5. **Creates and signs payment** - Automatically creates payment transaction using provided wallet
+6. **Resends request** - Resends request with attached payment credentials
+7. **Returns content** - Returns protected content
 
-#### 工作流程
+#### Workflow
 
 ```
 fetchWithPayment(url)
   ↓
-发送初始请求
+Send initial request
   ↓
-收到响应
-  ├─ 200 → 直接返回
-  └─ 402 → 需要支付 ↓
-解析支付要求
+Receive response
+  ├─ 200 → Return directly
+  └─ 402 → Payment required ↓
+Parse payment requirements
   ↓
-选择支付方式（paymentRequirementsSelector）
+Select payment method (paymentRequirementsSelector)
   ↓
-验证金额 <= maxValue
-  ├─ 超出 → 抛出错误
-  └─ 通过 ↓
-创建并签署支付交易
+Verify amount <= maxValue
+  ├─ Exceeded → Throw error
+  └─ Pass ↓
+Create and sign payment transaction
   ↓
-附加 X-PAYMENT header 重新请求
+Attach X-PAYMENT header and resend request
   ↓
-返回受保护内容
+Return protected content
 ```
 
-#### 参数详解
+#### Parameter Details
 
-| 参数 | 类型 | 必需 | 说明 |
+| Parameter | Type | Required | Description |
 |------|------|------|------|
-| `fetch` | `typeof globalThis.fetch` | ✅ | 要包装的 fetch 函数（通常是 `globalThis.fetch`） |
-| `walletClient` | `Signer \| MultiNetworkSigner` | ✅ | 用于签署支付的钱包客户端 |
-| `maxValue` | `bigint` | ⚠️ | 允许自动支付的最大金额（原子单位），默认 0.1 USDC |
-| `paymentRequirementsSelector` | `PaymentRequirementsSelector` | ⚠️ | 自定义支付方式选择器 |
-| `config` | `X402Config` | ⚠️ | X402 配置（如自定义 RPC URL） |
+| `fetch` | `typeof globalThis.fetch` | ✅ | Fetch function to wrap (usually `globalThis.fetch`) |
+| `walletClient` | `Signer \| MultiNetworkSigner` | ✅ | Wallet client for signing payments |
+| `maxValue` | `bigint` | ⚠️ | Maximum allowed automatic payment amount (atomic units), defaults to 0.1 USDC |
+| `paymentRequirementsSelector` | `PaymentRequirementsSelector` | ⚠️ | Custom payment method selector |
+| `config` | `X402Config` | ⚠️ | X402 configuration (e.g., custom RPC URL) |
 
-#### 类型定义
+#### Type Definitions
 
 ##### PaymentRequirementsSelector
 
 ```typescript
 type PaymentRequirementsSelector = (
-  paymentRequirements: PaymentRequirements[],  // 所有可用的支付选项
-  network?: Network | Network[],                // 客户端支持的网络
-  scheme?: "exact"                              // 支付方案
-) => PaymentRequirements;                       // 返回选中的支付方式
+  paymentRequirements: PaymentRequirements[],  // All available payment options
+  network?: Network | Network[],                // Networks supported by client
+  scheme?: "exact"                              // Payment scheme
+) => PaymentRequirements;                       // Returns selected payment method
 ```
 
-**默认选择策略：**
-1. 优先选择 Base 网络（费用低）
-2. 筛选匹配客户端网络的选项
-3. 优先选择 USDC Token
-4. 如果都不匹配，选择第一个
+**Default Selection Strategy:**
+1. Prioritize Base network (lower fees)
+2. Filter options matching client network
+3. Prioritize USDC Token
+4. If none match, select first option
 
-#### 使用示例
+#### Usage Examples
 
-**基础用法：**
+**Basic Usage:**
 
 ```typescript
 import {
@@ -705,16 +706,16 @@ import {
 } from "x402-sdk-for-solana/fetch";
 
 async function fetchProtectedAPI() {
-  // 创建签名者
+  // Create signer
   const signer = await createSigner(
     "solana-devnet",
     "YOUR_PRIVATE_KEY_BASE58"
   );
 
-  // 包装 fetch
+  // Wrap fetch
   const fetchWithPayment = wrapFetchWithPayment(fetch, signer);
 
-  // 使用方式与普通 fetch 完全相同
+  // Use exactly like normal fetch
   const response = await fetchWithPayment("http://localhost:4021/weather");
   const data = await response.json();
 
@@ -722,21 +723,21 @@ async function fetchProtectedAPI() {
 }
 ```
 
-**自定义最大支付金额：**
+**Custom Maximum Payment Amount:**
 
 ```typescript
-// 允许最多支付 1 USDC
+// Allow maximum payment of 1 USDC
 const fetchWithPayment = wrapFetchWithPayment(
   fetch,
   signer,
-  BigInt(1 * 10 ** 6)  // 1 USDC = 1,000,000 最小单位
+  BigInt(1 * 10 ** 6)  // 1 USDC = 1,000,000 smallest units
 );
 ```
 
-**自定义支付选择器：**
+**Custom Payment Selector:**
 
 ```typescript
-// 总是选择最便宜的支付方式
+// Always select cheapest payment method
 const cheapestSelector = (requirements: PaymentRequirements[]) => {
   return requirements.reduce((cheapest, current) =>
     BigInt(current.maxAmountRequired) < BigInt(cheapest.maxAmountRequired)
@@ -749,27 +750,27 @@ const fetchWithPayment = wrapFetchWithPayment(
   fetch,
   signer,
   BigInt(1 * 10 ** 6),
-  cheapestSelector  // 使用自定义选择器
+  cheapestSelector  // Use custom selector
 );
 ```
 
-**自定义 RPC URL：**
+**Custom RPC URL:**
 
 ```typescript
 const fetchWithPayment = wrapFetchWithPayment(
   fetch,
   signer,
-  undefined,  // 使用默认 maxValue
-  undefined,  // 使用默认选择器
+  undefined,  // Use default maxValue
+  undefined,  // Use default selector
   {
     svmConfig: {
-      rpcUrl: "http://localhost:8899"  // 自定义 RPC URL
+      rpcUrl: "http://localhost:8899"  // Custom RPC URL
     }
   }
 );
 ```
 
-**完整示例：**
+**Complete Example:**
 
 ```typescript
 import {
@@ -784,7 +785,7 @@ async function main() {
   const fetchWithPayment = wrapFetchWithPayment(
     fetch,
     signer,
-    BigInt(10 * 10 ** 6),  // 最多支付 10 USDC
+    BigInt(10 * 10 ** 6),  // Maximum payment of 10 USDC
     undefined,
     {
       svmConfig: {
@@ -801,7 +802,7 @@ async function main() {
     const data = await response.json();
     console.log("Data:", data);
 
-    // 解析支付响应
+    // Parse payment response
     const paymentResponse = decodeXPaymentResponse(
       response.headers.get("x-payment-response")!
     );
@@ -809,70 +810,67 @@ async function main() {
 
   } catch (error) {
     if (error.message === "Payment amount exceeds maximum allowed") {
-      console.error("支付金额超出限制！");
+      console.error("Payment amount exceeds limit!");
     } else {
-      console.error("请求失败:", error);
+      console.error("Request failed:", error);
     }
   }
 }
 ```
 
-#### maxValue 详解
+#### maxValue Details
 
-`maxValue` 是一个重要的安全参数，用于防止意外的大额支付：
- 
-
-**金额计算示例：**
-- USDC 有 6 位小数
-- 1 USDC = 1,000,000 最小单位
-- 0.1 USDC = 100,000 最小单位
-- 公式：`BigInt(金额 * 10 ** decimals)`
+`maxValue` is an important security parameter to prevent unexpected large payments:
 
 
+**Amount Calculation Examples:**
+- USDC has 6 decimal places
+- 1 USDC = 1,000,000 smallest units
+- 0.1 USDC = 100,000 smallest units
+- Formula: `BigInt(amount * 10 ** decimals)`
 
-### 参考示例 及 NPM 脚本
+
+
+### Reference Examples and NPM Scripts
 
 ```bash
-# 自动化设置 localnet 环境变量
+# Automated setup for localnet environment variables
 pnpm setup-localnet
 ```
 
-在 examples 目录下仔细：
+Run in the examples directory:
 
 ```
-# 启动 facilitator
+# Start facilitator
 pnpm run 402_facilitator
 
-# 启动 server
+# Start server
 pnpm run 402_server
 
-# 运行 client
+# Run client
 pnpm run 402_client
 ```
 
 
 
-## 贡献指南
+## Contributing
 
-欢迎贡献！详细的开发指南请参阅 [参与贡献](./Contribute.md) 部分。 
+Contributions are welcome! Please refer to the [Contributing](./Contribute.md) section for detailed development guidelines.
 
-## 许可证
+## License
 
 MIT
 
-## 相关链接
+## Related Links
 
-- [npm 包](https://www.npmjs.com/package/x402-sdk-for-solana)
-- [GitHub 仓库](https://github.com/xilibi2003/x402-sdk-for-solana)
-- [Solana 文档](https://docs.solana.com/)
-- [SPL Token 文档](https://spl.solana.com/token)
-- [Express 文档](https://expressjs.com/)
-- [SDK 发布指南](./SDK_PUBLISHING_GUIDE.md)
+- [npm package](https://www.npmjs.com/package/x402-sdk-for-solana)
+- [GitHub Repository](https://github.com/xilibi2003/x402-sdk-for-solana)
+- [Solana Documentation](https://docs.solana.com/)
+- [SPL Token Documentation](https://spl.solana.com/token)
+- [Express Documentation](https://expressjs.com/)
+- [SDK Publishing Guide](./SDK_PUBLISHING_GUIDE.md)
 
-## 支持
+## Support
 
-如有问题或建议，请：
+For questions or suggestions, please summit [Issues](https://github.com/xilibi2003/x402-sdk-for-solana/issues)
 
-1. 查看 [Issues](https://github.com/xilibi2003/x402-sdk-for-solana/issues)
-2. 搜索已有的问题
-3. 创建新的 Issue
