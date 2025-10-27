@@ -1,6 +1,6 @@
-export * from "./json";
-export * from "./paywall";
-export * from "./base64";
-export * from "./network";
-export * from "./middleware";
-export * as svm from "./svm";
+export * from "./json.js";
+export * from "./paywall.js";
+export * from "./base64.js";
+export * from "./network.js";
+export * from "./middleware.js";
+export * as svm from "./svm/index.js";

@@ -1,16 +1,16 @@
-import { toJsonSafe } from "../shared";
+import { toJsonSafe } from "../shared/index.js";
 import {
   ListDiscoveryResourcesRequest,
   ListDiscoveryResourcesResponse,
   FacilitatorConfig,
   SupportedPaymentKindsResponse,
-} from "../types";
+} from "../types/index.js";
 import {
   PaymentPayload,
   PaymentRequirements,
   SettleResponse,
   VerifyResponse,
-} from "../types/verify";
+} from "../types/verify/index.js";
 
 const DEFAULT_FACILITATOR_URL = "https://x402.org/facilitator";
 

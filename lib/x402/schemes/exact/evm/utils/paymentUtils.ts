@@ -1,11 +1,11 @@
-import { safeBase64Encode, safeBase64Decode } from "../../../../shared";
-import { SupportedEVMNetworks, SupportedSVMNetworks } from "../../../../types";
+import { safeBase64Encode, safeBase64Decode } from "../../../../shared/index.js";
+import { SupportedEVMNetworks, SupportedSVMNetworks } from "../../../../types/index.js";
 import {
   PaymentPayload,
   PaymentPayloadSchema,
   ExactEvmPayload,
   ExactSvmPayload,
-} from "../../../../types/verify";
+} from "../../../../types/verify/index.js";
 
 /**
  * Encodes a payment payload into a base64 string, ensuring bigint values are properly stringified

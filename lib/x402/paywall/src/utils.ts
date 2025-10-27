@@ -1,4 +1,4 @@
-import type { PaymentRequirements } from "../../types";
+import type { PaymentRequirements } from "../../types/index.js";
 
 /**
  * Safely clones an object without prototype pollution

@@ -1,7 +1,7 @@
-export * from "./money";
-export * from "./network";
-export * from "./resource";
-export * from "./middleware";
-export * from "./wallet";
-export * as evm from "./evm";
-export * as svm from "./svm";
+export * from "./money.js";
+export * from "./network.js";
+export * from "./resource.js";
+export * from "./middleware.js";
+export * from "./wallet.js";
+export * as evm from "./evm/index.js";
+export * as svm from "./svm/index.js";

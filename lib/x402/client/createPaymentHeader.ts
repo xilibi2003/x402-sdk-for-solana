@@ -1,8 +1,8 @@
-import { createPaymentHeader as createPaymentHeaderExactEVM } from "../schemes/exact/evm/client";
-import { createPaymentHeader as createPaymentHeaderExactSVM } from "../schemes/exact/svm/client";
-import { isEvmSignerWallet, isMultiNetworkSigner, isSvmSignerWallet, MultiNetworkSigner, Signer, SupportedEVMNetworks, SupportedSVMNetworks } from "../types/shared";
-import { PaymentRequirements } from "../types/verify";
-import { X402Config } from "../types/config";
+import { createPaymentHeader as createPaymentHeaderExactEVM } from "../schemes/exact/evm/client.js";
+import { createPaymentHeader as createPaymentHeaderExactSVM } from "../schemes/exact/svm/client.js";
+import { isEvmSignerWallet, isMultiNetworkSigner, isSvmSignerWallet, MultiNetworkSigner, Signer, SupportedEVMNetworks, SupportedSVMNetworks } from "../types/shared/index.js";
+import { PaymentRequirements } from "../types/verify/index.js";
+import { X402Config } from "../types/config.js";
 
 /**
  * Creates a payment header based on the provided client and payment requirements.

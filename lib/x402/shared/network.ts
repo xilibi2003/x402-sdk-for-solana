@@ -1,4 +1,4 @@
-import { EvmNetworkToChainId, Network, SvmNetworkToChainId } from "../types/shared";
+import { EvmNetworkToChainId, Network, SvmNetworkToChainId } from "../types/shared/index.js";
 
 /**
  * Converts a network name to its corresponding chain ID

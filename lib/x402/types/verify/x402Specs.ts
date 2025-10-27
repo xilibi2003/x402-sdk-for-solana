@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { NetworkSchema } from "../shared";
-import { SvmAddressRegex } from "../shared/svm";
-import { Base64EncodedRegex } from "../../shared/base64";
+import { NetworkSchema } from "../shared/index.js";
+import { SvmAddressRegex } from "../shared/svm/index.js";
+import { Base64EncodedRegex } from "../../shared/base64.js";
 
 // Constants
 const EvmMaxAtomicUnits = 18;

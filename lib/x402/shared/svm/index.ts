@@ -1,3 +1,3 @@
-export * from "./rpc";
-export * from "./wallet";
-export * from "./transaction";
+export * from "./rpc.js";
+export * from "./wallet.js";
+export * from "./transaction.js";

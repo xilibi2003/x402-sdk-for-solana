@@ -1,2 +1,2 @@
-export * as exact from "./exact";
-export * from "./utils";
+export * as exact from "./exact/index.js";
+export * from "./utils/index.js";

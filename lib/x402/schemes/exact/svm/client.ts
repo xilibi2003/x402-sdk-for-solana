@@ -1,4 +1,4 @@
-import { encodePayment } from "../../utils";
+import { encodePayment } from "../../utils/index.js";
 import {
   Address,
   pipe,
@@ -14,8 +14,8 @@ import {
   TransactionSigner,
   Instruction,
 } from "@solana/kit";
-import { PaymentPayload, PaymentRequirements } from "../../../types/verify";
-import { X402Config } from "../../../types/config";
+import { PaymentPayload, PaymentRequirements } from "../../../types/verify/index.js";
+import { X402Config } from "../../../types/config.js";
 import {
   fetchMint,
   findAssociatedTokenPda,
@@ -29,7 +29,7 @@ import {
   getSetComputeUnitLimitInstruction,
   setTransactionMessageComputeUnitPrice,
 } from "@solana-program/compute-budget";
-import { getRpcClient } from "../../../shared/svm/rpc";
+import { getRpcClient } from "../../../shared/svm/rpc.js";
 
 /**
  * Creates and encodes a payment header for the given client and payment requirements.

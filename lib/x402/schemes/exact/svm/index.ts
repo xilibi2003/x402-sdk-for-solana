@@ -1,2 +1,2 @@
-export * from "./facilitator/index";
-export * from "./client";
+export * from "./facilitator/index.js";
+export * from "./client.js";

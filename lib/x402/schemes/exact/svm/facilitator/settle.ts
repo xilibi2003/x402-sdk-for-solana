@@ -4,8 +4,8 @@ import {
   PaymentRequirements,
   ExactSvmPayload,
   ErrorReasons,
-} from "../../../../types/verify";
-import { X402Config } from "../../../../types/config";
+} from "../../../../types/verify/index.js";
+import { X402Config } from "../../../../types/config.js";
 import {
   assertIsTransactionMessageWithBlockhashLifetime,
   Commitment,
@@ -23,14 +23,14 @@ import {
   RpcDevnet,
   RpcMainnet,
 } from "@solana/kit";
-import { decodeTransactionFromPayload, getTokenPayerFromTransaction } from "../../../../shared/svm";
-import { getRpcClient, getRpcSubscriptions } from "../../../../shared/svm/rpc";
+import { decodeTransactionFromPayload, getTokenPayerFromTransaction } from "../../../../shared/svm/index.js";
+import { getRpcClient, getRpcSubscriptions } from "../../../../shared/svm/rpc.js";
 import {
   createBlockHeightExceedencePromiseFactory,
   waitForRecentTransactionConfirmation,
   createRecentSignatureConfirmationPromiseFactory,
 } from "@solana/transaction-confirmation";
-import { verify } from "./verify";
+import { verify } from "./verify.js";
 
 /**
  * Settle the payment payload against the payment requirements.

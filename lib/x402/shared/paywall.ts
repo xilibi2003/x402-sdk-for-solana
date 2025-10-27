@@ -1,6 +1,6 @@
-import { PAYWALL_TEMPLATE } from "../paywall/gen/template";
-import { config } from "../types/shared/evm/config";
-import { PaymentRequirements } from "../types/verify";
+import { PAYWALL_TEMPLATE } from "../paywall/gen/template.js";
+import { config } from "../types/shared/evm/config.js";
+import { PaymentRequirements } from "../types/verify/index.js";
 
 interface PaywallOptions {
   amount: number;

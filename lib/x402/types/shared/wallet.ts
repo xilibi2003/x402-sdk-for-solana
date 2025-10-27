@@ -1,6 +1,6 @@
-import * as evm from "./evm/wallet";
-import * as svm from "../../shared/svm/wallet";
-import { SupportedEVMNetworks, SupportedSVMNetworks } from "./network";
+import * as evm from "./evm/wallet.js";
+import * as svm from "../../shared/svm/wallet.js";
+import { SupportedEVMNetworks, SupportedSVMNetworks } from "./network.js";
 import { Hex } from "viem";
 
 export type ConnectedClient = evm.ConnectedClient | svm.SvmConnectedClient;

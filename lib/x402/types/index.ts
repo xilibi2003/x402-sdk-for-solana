@@ -1,3 +1,3 @@
-export * from "./config";
-export * from "./shared";
-export * from "./verify";
+export * from "./config.js";
+export * from "./shared/index.js";
+export * from "./verify/index.js";

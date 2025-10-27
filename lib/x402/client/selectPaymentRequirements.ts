@@ -1,6 +1,6 @@
-import { Network, PaymentRequirements } from "../types";
-import { getUsdcChainConfigForChain } from "../shared/evm";
-import { getNetworkId } from "../shared/network";
+import { Network, PaymentRequirements } from "../types/index.js";
+import { getUsdcChainConfigForChain } from "../shared/evm/index.js";
+import { getNetworkId } from "../shared/network.js";
 
 /**
  * Default selector for payment requirements.

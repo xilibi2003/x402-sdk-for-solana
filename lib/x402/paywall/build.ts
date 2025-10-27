@@ -2,7 +2,7 @@ import esbuild from "esbuild";
 import { htmlPlugin } from "@craftamap/esbuild-plugin-html";
 import fs from "fs";
 import path from "path";
-import { getBaseTemplate } from "./baseTemplate";
+import { getBaseTemplate } from "./baseTemplate.js";
 
 // This file only runs at build time and generates a template HTML file
 // Template variables are handled at runtime, not build time

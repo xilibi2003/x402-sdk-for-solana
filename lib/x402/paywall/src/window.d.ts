@@ -1,4 +1,4 @@
-import { PaymentRequirements } from "../../types/verify";
+import { PaymentRequirements } from "../../types/verify/index.js";
 
 declare global {
   interface Window {

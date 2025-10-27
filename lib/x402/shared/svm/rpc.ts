@@ -12,7 +12,7 @@ import {
   RpcSubscriptionsTransportFromClusterUrl,
   ClusterUrl,
 } from "@solana/kit";
-import { Network } from "../../types/shared";
+import { Network } from "../../types/shared/index.js";
 
 /**
  * Default RPC endpoint for Solana localnet

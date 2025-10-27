@@ -4,9 +4,9 @@ import {
   PaymentRequirements,
   ExactSvmPayload,
   ErrorReasons,
-} from "../../../../types/verify";
-import { SupportedSVMNetworks } from "../../../../types/shared";
-import { X402Config } from "../../../../types/config";
+} from "../../../../types/verify/index.js";
+import { SupportedSVMNetworks } from "../../../../types/shared/index.js";
+import { X402Config } from "../../../../types/config.js";
 import {
   Address,
   assertIsInstructionWithAccounts,
@@ -48,9 +48,9 @@ import {
   decodeTransactionFromPayload,
   signAndSimulateTransaction,
   getTokenPayerFromTransaction,
-} from "../../../../shared/svm";
-import { getRpcClient } from "../../../../shared/svm/rpc";
-import { SCHEME } from "../../";
+} from "../../../../shared/svm/index.js";
+import { getRpcClient } from "../../../../shared/svm/rpc.js";
+import { SCHEME } from "../..//index.js";
 
 /**
  * Verify the payment payload against the payment requirements.

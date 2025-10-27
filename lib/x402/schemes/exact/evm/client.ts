@@ -1,8 +1,8 @@
 import { Address, Chain, LocalAccount, Transport } from "viem";
-import { isSignerWallet, SignerWallet } from "../../../types/shared/evm";
-import { PaymentPayload, PaymentRequirements, UnsignedPaymentPayload } from "../../../types/verify";
-import { createNonce, signAuthorization } from "./sign";
-import { encodePayment } from "./utils/paymentUtils";
+import { isSignerWallet, SignerWallet } from "../../../types/shared/evm/index.js";
+import { PaymentPayload, PaymentRequirements, UnsignedPaymentPayload } from "../../../types/verify/index.js";
+import { createNonce, signAuthorization } from "./sign.js";
+import { encodePayment } from "./utils/paymentUtils.js";
 
 /**
  * Prepares an unsigned payment header with the given sender address and payment requirements.

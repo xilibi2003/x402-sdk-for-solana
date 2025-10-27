@@ -1,7 +1,7 @@
-import { signPaymentHeader as signPaymentHeaderExactEVM } from "../schemes/exact/evm/client";
-import { encodePayment } from "../schemes/exact/evm/utils/paymentUtils";
-import { isEvmSignerWallet, isMultiNetworkSigner, MultiNetworkSigner, Signer, SupportedEVMNetworks } from "../types/shared";
-import { PaymentRequirements, UnsignedPaymentPayload } from "../types/verify";
+import { signPaymentHeader as signPaymentHeaderExactEVM } from "../schemes/exact/evm/client.js";
+import { encodePayment } from "../schemes/exact/evm/utils/paymentUtils.js";
+import { isEvmSignerWallet, isMultiNetworkSigner, MultiNetworkSigner, Signer, SupportedEVMNetworks } from "../types/shared/index.js";
+import { PaymentRequirements, UnsignedPaymentPayload } from "../types/verify/index.js";
 
 /**
  * Signs a payment header using the provided client and payment requirements.

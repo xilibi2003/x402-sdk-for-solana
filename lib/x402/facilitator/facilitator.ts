@@ -1,19 +1,19 @@
-import { verify as verifyExactEvm, settle as settleExactEvm } from "../schemes/exact/evm";
-import { verify as verifyExactSvm, settle as settleExactSvm } from "../schemes/exact/svm";
-import { SupportedEVMNetworks, SupportedSVMNetworks } from "../types/shared";
-import { X402Config } from "../types/config";
+import { verify as verifyExactEvm, settle as settleExactEvm } from "../schemes/exact/evm/index.js";
+import { verify as verifyExactSvm, settle as settleExactSvm } from "../schemes/exact/svm/index.js";
+import { SupportedEVMNetworks, SupportedSVMNetworks } from "../types/shared/index.js";
+import { X402Config } from "../types/config.js";
 import {
   ConnectedClient as EvmConnectedClient,
   SignerWallet as EvmSignerWallet,
-} from "../types/shared/evm";
-import { ConnectedClient, Signer } from "../types/shared/wallet";
+} from "../types/shared/evm/index.js";
+import { ConnectedClient, Signer } from "../types/shared/wallet.js";
 import {
   PaymentPayload,
   PaymentRequirements,
   SettleResponse,
   VerifyResponse,
   ExactEvmPayload,
-} from "../types/verify";
+} from "../types/verify/index.js";
 import { Chain, Transport, Account } from "viem";
 import { KeyPairSigner } from "@solana/kit";
 

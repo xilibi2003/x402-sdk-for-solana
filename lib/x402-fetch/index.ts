@@ -8,12 +8,12 @@ import {
   isSvmSignerWallet,
   Network,
   X402Config,
-} from "../x402/types";
+} from "../x402/types/index.js";
 import {
   createPaymentHeader,
   PaymentRequirementsSelector,
   selectPaymentRequirements,
-} from "../x402/client";
+} from "../x402/client/index.js";
 
 /**
  * Enables the payment of APIs using the x402 payment protocol.
@@ -120,7 +120,7 @@ export function wrapFetchWithPayment(
   };
 }
 
-export { decodeXPaymentResponse } from "../x402/shared";
-export { createSigner, type Signer, type MultiNetworkSigner, type X402Config } from "../x402/types";
-export { type PaymentRequirementsSelector } from "../x402/client";
+export { decodeXPaymentResponse } from "../x402/shared/index.js";
+export { createSigner, type Signer, type MultiNetworkSigner, type X402Config } from "../x402/types/index.js";
+export { type PaymentRequirementsSelector } from "../x402/client/index.js";
 export type { Hex } from "viem";

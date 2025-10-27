@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Address, getAddress } from "viem";
 import { Address as SolanaAddress } from "@solana/kit";
-import { exact } from "../x402/schemes";
+import { exact } from "../x402/schemes/index.js";
 import {
   computeRoutePatterns,
   findMatchingPaymentRequirements,
@@ -9,7 +9,7 @@ import {
   getPaywallHtml,
   processPriceToAtomicAmount,
   toJsonSafe,
-} from "../x402/shared";
+} from "../x402/shared/index.js";
 import {
   FacilitatorConfig,
   ERC20TokenAmount,
@@ -23,8 +23,8 @@ import {
   SupportedEVMNetworks,
   SupportedSVMNetworks,
   X402Config,
-} from "../x402/types";
-import { useFacilitator } from "../x402/verify";
+} from "../x402/types/index.js";
+import { useFacilitator } from "../x402/verify/index.js";
 
 /**
  * Creates a payment middleware factory for Express
@@ -371,5 +371,5 @@ export type {
   RoutesConfig,
   X402Config,
   TokenConfig,
-} from "../x402/types";
+} from "../x402/types/index.js";
 export type { Address as SolanaAddress } from "@solana/kit";

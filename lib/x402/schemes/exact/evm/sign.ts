@@ -1,12 +1,12 @@
 import { Chain, getAddress, Hex, LocalAccount, toHex, Transport } from "viem";
-import { getNetworkId } from "../../../shared";
+import { getNetworkId } from "../../../shared/index.js";
 import {
   authorizationTypes,
   isAccount,
   isSignerWallet,
   SignerWallet,
-} from "../../../types/shared/evm";
-import { ExactEvmPayloadAuthorization, PaymentRequirements } from "../../../types/verify";
+} from "../../../types/shared/evm/index.js";
+import { ExactEvmPayloadAuthorization, PaymentRequirements } from "../../../types/verify/index.js";
 
 /**
  * Signs an EIP-3009 authorization for USDC transfer

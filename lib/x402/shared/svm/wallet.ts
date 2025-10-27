@@ -9,8 +9,8 @@ import {
   isKeyPairSigner,
 } from "@solana/kit";
 import { base58 } from "@scure/base";
-import { getRpcClient } from "./rpc";
-import { Network, SupportedSVMNetworks } from "../../types/shared";
+import { getRpcClient } from "./rpc.js";
+import { Network, SupportedSVMNetworks } from "../../types/shared/index.js";
 export type { KeyPairSigner } from "@solana/kit";
 
 export type SvmConnectedClient = RpcDevnet<SolanaRpcApiDevnet> | RpcMainnet<SolanaRpcApiMainnet>;

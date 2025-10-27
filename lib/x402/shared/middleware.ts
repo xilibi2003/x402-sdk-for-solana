@@ -9,11 +9,11 @@ import {
   PaymentRequirements,
   PaymentPayload,
   SPLTokenAmount,
-} from "../types";
-import { RoutesConfig } from "../types";
-import { safeBase64Decode } from "./base64";
-import { getUsdcChainConfigForChain } from "./evm";
-import { getNetworkId } from "./network";
+} from "../types/index.js";
+import { RoutesConfig } from "../types/index.js";
+import { safeBase64Decode } from "./base64.js";
+import { getUsdcChainConfigForChain } from "./evm/index.js";
+import { getNetworkId } from "./network.js";
 
 /**
  * Computes the route patterns for the given routes config
