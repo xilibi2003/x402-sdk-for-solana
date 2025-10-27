@@ -1,16 +1,28 @@
 {
   "name": "examples",
   "version": "1.0.0",
-  "description": "",
+  "description": "Examples for x402-sdk-for-solana",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "facilitator": "tsx examples/facilitator.ts",
-    "client": "tsx examples/client_fetch.ts",
-    "server": "tsx examples/server_express.ts 2>&1"
+    "facilitator": "tsx src/my_facilitator.ts",
+    "client": "tsx src/client_fetch.ts",
+    "server": "tsx src/server_express.ts 2>&1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.11.0"
+  "packageManager": "pnpm@10.11.0",
+  "dependencies": {
+    "x402-sdk-for-solana": "workspace:*",
+    "dotenv": "^16.4.7",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.19.23",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  }
 }
