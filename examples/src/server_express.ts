@@ -42,36 +42,26 @@ const x402Config: X402Config | undefined =
       }
     : undefined;
 
+// 支付中间件会检查请求的 URL 是否需要支付
+// 如果用户请求没有 X-PAYMENT header，会返回一个 402 状态码，并包含支付要求 `x-payment-required` 
+// 如果请求包含 X-PAYMENT header，则调用 Facilitator 验证支付，验证成功，调用 Facilitator 结算，返回受保护内容，同时添加支付响应头 X-PAYMENT-RESPONSE
 app.use(
   paymentMiddleware(
     payTo,
     {
       "GET /weather": {
-        // USDC amount in dollars
-        price: "0.0018",
+        price: "0.0018", // amount
         network: network, // configured via NETWORK env variable
       },
-      "/premium/*": {
-        // Define atomic amounts in any EIP-3009 token
-        price: {
-          amount: "100000",
-          asset: {
-            address: "0xabc",
-            decimals: 18,
-            // omit eip712 for Solana
-            eip712: {
-              name: "WETH",
-              version: "1",
-            },
-          },
-        },
-        network: "base-sepolia",
+      "GET /premium/content": {
+        price: "0.15",
+        network: network,
       },
     },
     {
       url: facilitatorUrl,
     },
-    undefined, // paywall config
+    undefined, // paywall config： 配置希望在支付页面显示的内容
     x402Config, // X402 config with custom token
   ),
 );

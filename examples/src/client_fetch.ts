@@ -10,15 +10,13 @@ config({ path: '.env_client' });
 const svmPrivateKey = process.env.USER_SVM_PRIVATE_KEY || "";
 const svmNetwork = (process.env.SVM_NETWORK || "solana-devnet") as any;
 const rpcUrl = process.env.SVM_RPC_URL || "";
-const baseURL = "http://localhost:4021"; //process.env.RESOURCE_SERVER_URL as string; // e.g. https://example.com
-const endpointPath = "/weather"; // process.env.ENDPOINT_PATH as string; // e.g. /weather
-const url = `${baseURL}${endpointPath}`; // e.g. https://example.com/weather
+const need_pay_resource_url = "http://localhost:4021/weather";
 
 console.log("svmNetwork", svmNetwork);
 console.log("rpcUrl", rpcUrl || '(using default)');
-console.log("url", url);
+console.log("need_pay_resource_url", need_pay_resource_url);
 
-if (!baseURL || !svmPrivateKey || !endpointPath) {
+if (!need_pay_resource_url || !svmPrivateKey ) {
   console.error("Missing required environment variables");
   process.exit(1);
 }
@@ -28,8 +26,7 @@ if (!baseURL || !svmPrivateKey || !endpointPath) {
  *
  * To run this example, you need to set the following environment variables:
  * - PRIVATE_KEY: The private key of the signer
- * - RESOURCE_SERVER_URL: The URL of the resource server
- * - ENDPOINT_PATH: The path of the endpoint to call on the resource server
+ * - NEED_PAY_RESOURCE_URL: The URL of the resource server that requires a payment
  */
 async function main(): Promise<void> {
   // network name: solana-localnet, solana-devnet, solana
@@ -39,8 +36,8 @@ async function main(): Promise<void> {
   const fetchWithPayment = wrapFetchWithPayment(
     fetch,
     svmSigner,
-    undefined, // maxValue - 使用默认值
-    undefined, // paymentRequirementsSelector - 使用默认值
+    undefined, // maxValue - 确保支付不会超过最大允许值
+    undefined, // paymentRequirementsSelector - 选择支付选项
     {
       svmConfig: {
         rpcUrl: rpcUrl
@@ -49,7 +46,12 @@ async function main(): Promise<void> {
   );
 
   try {
-    const response = await fetchWithPayment(url, { method: "GET" });
+
+  // 使用 fetchWithPayment 发起请求
+  // 函数检查到 402 状态码后，解析支付要求 header 中的 `x-payment-required` 
+  // 创建并签署支付交易，附加支付信息（x-payment header）重新发送请求
+
+    const response = await fetchWithPayment(need_pay_resource_url, { method: "GET" });
     console.log("response received");
     const body = await response.json();
     console.log(body);

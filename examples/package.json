@@ -15,7 +15,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.11.0",
   "dependencies": {
-    "x402-sdk-for-solana": "workspace:*",
+    "x402-sdk-for-solana": "^0.1.3",
     "dotenv": "^16.4.7",
     "express": "^4.18.2"
   },
